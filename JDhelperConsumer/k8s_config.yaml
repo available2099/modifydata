@@ -1,0 +1,73 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: dispatch
+  namespace: service
+  annotations:
+    service.beta.kubernetes.io/ucloud-load-balancer-type: Inner
+spec:
+  ports:
+    - name: dispatch
+      protocol: TCP
+      port: 8844
+      targetPort: 8844
+      nodePort: 8844
+    - name: dispatch-management
+      protocol: TCP
+      port: 8081
+      targetPort: 8081
+      nodePort: 8081
+  selector:
+    app: dispatch
+  type: NodePort
+  sessionAffinity: None
+  externalTrafficPolicy: Cluster
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dispatch
+  namespace: service
+  labels:
+    app: dispatch
+spec:
+  replicas: <K8S_REPLICAS>
+  selector:
+    matchLabels:
+      app: dispatch
+  template:
+    metadata:
+      labels:
+        app: dispatch
+    spec:
+      imagePullSecrets:
+        - name: shanghai-uhub
+      containers:
+        - name: dispatch
+          image: <UHUB_IMAGE_NAME>
+          env:
+            - name: OPTS_ENV_MARK
+              value: "<OPTS_ENV_MARK>"
+            - name: OPTS_OTHER
+              value: "<OPTS_OTHER>"
+          ports:
+            - containerPort: 8080
+            - containerPort: 8081
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 90
+            periodSeconds: 3
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 5
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 90
+            periodSeconds: 3
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 5
