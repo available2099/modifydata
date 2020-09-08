@@ -19,7 +19,9 @@ public class JdHelperController {
     private JdPetService jdPetService;
     @Autowired
     private JdPlantbeanService jdPlantbeanService;
-@Autowired RedisConfigTest RedisConfigTest;
+    @Autowired
+    RedisConfigTest RedisConfigTest;
+
     @RequestMapping(value = "/jscool/{type}/{subscriptionurl}", method = {RequestMethod.GET})
     public JdFruit selectOne(@PathVariable String type, @PathVariable String subscriptionurl) throws Exception {
         /*switch (type){
@@ -30,9 +32,10 @@ public class JdHelperController {
         RedisConfigTest.ListOperations();
         RedisConfigTest.testSetOperation();
         RedisConfigTest.testValueOption();*/
-        BigInteger m= new BigInteger(String.valueOf(21));
+        BigInteger m = new BigInteger(String.valueOf(21));
         return this.jdFruitService.queryById(m);
     }
+
     @GetMapping("/healthz")
     public Boolean healthz() {
         return true;

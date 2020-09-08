@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 public class UserVo implements Serializable {
 
-    public  static final String Table = "t_user";
+    public static final String Table = "t_user";
 
     private String name;
     private String address;

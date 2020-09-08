@@ -26,7 +26,8 @@ public class JdHelperController {
     private JdPlantbeanService jdPlantbeanService;
     @Autowired
     private RabbitSender rabbitSender;
-@Autowired RedisConfigTest RedisConfigTest;
+    @Autowired
+    RedisConfigTest RedisConfigTest;
     private static SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
     @RequestMapping(value = "/jscool/{type}/{subscriptionurl}", method = {RequestMethod.GET})
@@ -35,7 +36,7 @@ public class JdHelperController {
             case "fruit":
         }*/
         Map<String, Object> properties = new HashMap<>();
-        properties.put("number", "12345");
+        properties.put("md5", "760517d4be0b4082a5c6cf5529e4599e");
         properties.put("send_time", simpleDateFormat.format(new Date()));
         rabbitSender.send("Hello RabbitMQ For Spring Boot!", properties);
 
@@ -44,9 +45,10 @@ public class JdHelperController {
         RedisConfigTest.ListOperations();
         RedisConfigTest.testSetOperation();
         RedisConfigTest.testValueOption();*/
-        BigInteger m= new BigInteger(String.valueOf(21));
+        BigInteger m = new BigInteger(String.valueOf(21));
         return this.jdFruitService.queryById(m);
     }
+
     @GetMapping("/healthz")
     public Boolean healthz() {
         return true;
