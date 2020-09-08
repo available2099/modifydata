@@ -31,22 +31,24 @@ public class JdHelperController {
     private static SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
     @RequestMapping(value = "/jscool/{type}/{subscriptionurl}", method = {RequestMethod.GET})
-    public JdFruit selectOne(@PathVariable String type, @PathVariable String subscriptionurl) throws Exception {
-        /*switch (type){
+    public void selectOne(@PathVariable String type, @PathVariable String subscriptionurl) throws Exception {
+    /*    switch (type){
             case "fruit":
         }*/
-        Map<String, Object> properties = new HashMap<>();
-        properties.put("md5", "760517d4be0b4082a5c6cf5529e4599e");
-        properties.put("send_time", simpleDateFormat.format(new Date()));
-        rabbitSender.send("Hello RabbitMQ For Spring Boot!", properties);
+        if("fruit".equals(type)||"plantbean".equals(type)||"pet".equals(type)){
+            Map<String, Object> properties = new HashMap<>();
+            properties.put("md5", subscriptionurl);
+            properties.put("send_time", simpleDateFormat.format(new Date()));
+            rabbitSender.send(type, properties);
+        }
 
-        RedisConfigTest.testObj();
+        //RedisConfigTest.testObj();
  /*       RedisConfigTest.HashOperations();
         RedisConfigTest.ListOperations();
         RedisConfigTest.testSetOperation();
         RedisConfigTest.testValueOption();*/
         BigInteger m = new BigInteger(String.valueOf(21));
-        return this.jdFruitService.queryById(m);
+
     }
 
     @GetMapping("/healthz")
