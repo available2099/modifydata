@@ -1,13 +1,13 @@
 FROM adoptopenjdk/openjdk11:jre-11.0.8_10-alpine
 
 ENV OPTS_PROFILES_ACTIVE="prod" \
- OPTS_JVM_OPTS="-Dserver.port=8080 -Dmanagement.server.port=8081" \
+ OPTS_JVM_OPTS="-Dserver.port=8866" \
  OPTS_ENV_MARK="none" \
  OPTS_NODE_MARK="none" \
  OPTS_OTHER=""
 
 RUN mkdir -p /data/
-COPY ./target/JDhelperConsumer-1.0.0.jar /data/app.jar
+COPY ./JDhelperConsumer-1.0.0.jar /data/app.jar
 
 VOLUME ["/data/logs"]
 WORKDIR  /data
