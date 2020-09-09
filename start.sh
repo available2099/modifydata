@@ -1,5 +1,4 @@
- #!/usr/bin/env bash
- cd /var/local/jdhelper/con
+cd /var/local/jdhelper/con
  #删除容器
   docker rm -f $(docker ps -a | grep jdhelperconsumer | awk '{print $1}')
   #删除镜像
@@ -12,7 +11,7 @@
   docker run -d --net=host --name=jdhelperconsumer jdhelperconsumer
 
   echo "$var启动完成"
-
+  
   cd /var/local/jdhelper/pro
  #删除容器
   docker rm -f $(docker ps -a | grep jdhelperprovider | awk '{print $1}')

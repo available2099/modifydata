@@ -39,7 +39,7 @@ public class JdFruit implements Serializable {
     /**
      * 今天剩余有效次数
      */
-    private Integer todayEffectcount=4;
+    private Integer todayEffectcount=5;
     /**
      * 用户是否可用
      */
