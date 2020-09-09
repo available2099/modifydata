@@ -98,9 +98,8 @@ async function jdPet() {
         }
         console.log(`\n【您的互助码shareCode】 ${$.petInfo.shareCode}\n`);
         $.http.get({
-            url: "http://jdhelper.tk:8855/jscool/pet/"+$.farmInfo.farmUserPro.shareCode
-        })
-            .then((resp) => resp.body);
+            url: "http://jdhelper.tk:8855/jscool/pet/"+$.petInfo.shareCode
+        }).then((resp) => resp.body);
         await taskInit();
         if ($.taskInit.resultCode === '9999' || !$.taskInit.result) {
             console.log('初始化任务异常, 请稍后再试');
