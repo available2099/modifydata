@@ -1,9 +1,12 @@
 package com.demo.ai.conusmer;
 
+import com.demo.ai.entity.JdPet;
 import com.demo.ai.entity.Order;
+import com.demo.ai.service.JdPetService;
 import com.rabbitmq.client.Channel;
 import org.springframework.amqp.rabbit.annotation.*;
 import org.springframework.amqp.support.AmqpHeaders;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.handler.annotation.Headers;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -13,7 +16,8 @@ import java.util.Map;
 
 @Component
 public class PetRabbitReceiver {
-
+    @Autowired
+    private JdPetService jdPetService;
 
     @RabbitListener(bindings = @QueueBinding(
             value = @Queue(value = "pet",
@@ -28,10 +32,14 @@ public class PetRabbitReceiver {
     @RabbitHandler
     public void onMessage(Message message, Channel channel) throws Exception {
         System.err.println("--------------------------------------");
-        System.err.println("消费端Payload: " + message.getPayload());
+        System.err.println("消费端Pet: " + message.getPayload());
         Long deliveryTag = (Long) message.getHeaders().get(AmqpHeaders.DELIVERY_TAG);
         String md5 = (String) message.getHeaders().get("md5");
+        JdPet jdPet = new JdPet();
+        jdPet.setUserMd5(md5);
+        jdPet.setUniqueId((String)message.getHeaders().get("spring_returned_message_correlation"));
 
+        jdPetService.insert(jdPet);
 
         //手工ACK
         channel.basicAck(deliveryTag, false);

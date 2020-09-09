@@ -13,7 +13,7 @@ import java.util.List;
  * jd_plantBean(JdPlantbean)表服务实现类
  *
  * @author makejava
- * @since 2020-09-06 17:14:33
+ * @since 2020-09-09 12:02:39
  */
 @Service("jdPlantbeanService")
 public class JdPlantbeanServiceImpl implements JdPlantbeanService {

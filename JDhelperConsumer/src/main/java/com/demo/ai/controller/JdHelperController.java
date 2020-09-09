@@ -1,14 +1,11 @@
 package com.demo.ai.controller;
 
-import com.demo.ai.entity.JdFruit;
 import com.demo.ai.service.JdFruitService;
 import com.demo.ai.service.JdPetService;
 import com.demo.ai.service.JdPlantbeanService;
 import com.demo.ai.util.RedisConfigTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import java.math.BigInteger;
 
 @RestController
 //@RequestMapping("jscool")

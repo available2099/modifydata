@@ -13,7 +13,7 @@ import java.util.List;
  * jd_plantBean(JdFruit)表服务实现类
  *
  * @author makejava
- * @since 2020-09-06 17:14:22
+ * @since 2020-09-09 12:02:18
  */
 @Service("jdFruitService")
 public class JdFruitServiceImpl implements JdFruitService {
