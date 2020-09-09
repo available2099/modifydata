@@ -2,7 +2,7 @@ server:
   port: 8866
 spring:
   application:
-    name: spring-boot-mybatis-xml
+    name: jdconsumer
   datasource:
     url: jdbc:mysql://172.86.70.59:3339/lihao?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8&useSSL=false
     username: root
