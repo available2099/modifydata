@@ -1,8 +1,7 @@
-package com.demo.ai.service.impl;
+package com.demo.ai.service;
 
 import com.demo.ai.dao.JdPetDao;
 import com.demo.ai.entity.JdPet;
-import com.demo.ai.service.JdPetService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -13,7 +12,7 @@ import java.util.List;
  * jd_plantBean(JdPet)表服务实现类
  *
  * @author makejava
- * @since 2020-09-06 17:14:29
+ * @since 2020-09-09 12:02:28
  */
 @Service("jdPetService")
 public class JdPetServiceImpl implements JdPetService {

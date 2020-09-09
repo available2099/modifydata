@@ -1,8 +1,7 @@
-package com.demo.ai.service.impl;
+package com.demo.ai.service;
 
 import com.demo.ai.dao.JdFruitDao;
 import com.demo.ai.entity.JdFruit;
-import com.demo.ai.service.JdFruitService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -13,7 +12,7 @@ import java.util.List;
  * jd_plantBean(JdFruit)表服务实现类
  *
  * @author makejava
- * @since 2020-09-06 17:14:22
+ * @since 2020-09-09 12:02:18
  */
 @Service("jdFruitService")
 public class JdFruitServiceImpl implements JdFruitService {

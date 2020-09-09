@@ -9,7 +9,7 @@ import java.util.List;
  * jd_plantBean(JdPlantbean)表服务接口
  *
  * @author makejava
- * @since 2020-09-06 17:14:32
+ * @since 2020-09-09 12:02:37
  */
 public interface JdPlantbeanService {
 

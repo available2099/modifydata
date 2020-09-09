@@ -5,6 +5,7 @@
     <resultMap type="com.demo.ai.entity.JdPet" id="JdPetMap">
         <result property="id" column="id" jdbcType="OTHER"/>
         <result property="userMd5" column="user_md5" jdbcType="VARCHAR"/>
+        <result property="uniqueId" column="unique_id" jdbcType="VARCHAR"/>
         <result property="name" column="name" jdbcType="VARCHAR"/>
         <result property="ip" column="ip" jdbcType="VARCHAR"/>
         <result property="count" column="count" jdbcType="INTEGER"/>
@@ -12,14 +13,14 @@
         <result property="todayEffectcount" column="today_effectcount" jdbcType="INTEGER"/>
         <result property="userStatus" column="user_status" jdbcType="VARCHAR"/>
         <result property="userTodaystatus" column="user_todaystatus" jdbcType="VARCHAR"/>
-        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
         <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
     </resultMap>
 
     <!--查询单个-->
     <select id="queryById" resultMap="JdPetMap">
         select
-          id, user_md5, name, ip, count, todaycount, today_effectcount, user_status, user_todaystatus, create_time, update_time
+          id, user_md5, unique_id, name, ip, count, todaycount, today_effectcount, user_status, user_todaystatus, update_time, create_time
         from lihao.jd_pet
         where id = #{id}
     </select>
@@ -27,7 +28,7 @@
     <!--查询指定行数据-->
     <select id="queryAllByLimit" resultMap="JdPetMap">
         select
-          id, user_md5, name, ip, count, todaycount, today_effectcount, user_status, user_todaystatus, create_time, update_time
+          id, user_md5, unique_id, name, ip, count, todaycount, today_effectcount, user_status, user_todaystatus, update_time, create_time
         from lihao.jd_pet
         limit #{offset}, #{limit}
     </select>
@@ -35,8 +36,8 @@
     <!--通过实体作为筛选条件查询-->
     <select id="queryAll" resultMap="JdPetMap">
         select
-        id, user_md5, name, ip, count, todaycount, today_effectcount, user_status, user_todaystatus, create_time,
-        update_time
+        id, user_md5, unique_id, name, ip, count, todaycount, today_effectcount, user_status, user_todaystatus,
+        update_time, create_time
         from lihao.jd_pet
         <where>
             <if test="id != null">
@@ -44,6 +45,9 @@
             </if>
             <if test="userMd5 != null and userMd5 != ''">
                 and user_md5 = #{userMd5}
+            </if>
+            <if test="uniqueId != null and uniqueId != ''">
+                and unique_id = #{uniqueId}
             </if>
             <if test="name != null and name != ''">
                 and name = #{name}
@@ -66,19 +70,30 @@
             <if test="userTodaystatus != null and userTodaystatus != ''">
                 and user_todaystatus = #{userTodaystatus}
             </if>
-            <if test="createTime != null">
-                and create_time = #{createTime}
-            </if>
             <if test="updateTime != null">
                 and update_time = #{updateTime}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
             </if>
         </where>
     </select>
 
     <!--新增所有列-->
     <insert id="insert" keyProperty="id" useGeneratedKeys="true">
-        insert into lihao.jd_pet(user_md5, name, ip, count, todaycount, today_effectcount, user_status, user_todaystatus, create_time, update_time)
-        values (#{userMd5}, #{name}, #{ip}, #{count}, #{todaycount}, #{todayEffectcount}, #{userStatus}, #{userTodaystatus}, #{createTime}, #{updateTime})
+        <selectKey keyProperty="count" resultType="int" order="BEFORE">
+            select count(*) from lihao.jd_pet where user_md5 = #{userMd5}
+        </selectKey>
+        <if test="count > 0">
+            update lihao.jd_pet set todaycount =todaycount+1
+            <where>
+                user_md5 = #{userMd5}
+            </where>
+        </if>
+        <if test="count==0">
+            insert into lihao.jd_pet(user_md5, unique_id, name, ip, count, todaycount, today_effectcount, user_status, user_todaystatus, update_time, create_time)
+            values (#{userMd5}, #{uniqueId}, #{name}, #{ip}, #{count}, #{todaycount}, #{todayEffectcount}, #{userStatus}, #{userTodaystatus}, #{updateTime}, #{createTime})
+        </if>
     </insert>
 
     <!--通过主键修改数据-->
@@ -87,6 +102,9 @@
         <set>
             <if test="userMd5 != null and userMd5 != ''">
                 user_md5 = #{userMd5},
+            </if>
+            <if test="uniqueId != null and uniqueId != ''">
+                unique_id = #{uniqueId},
             </if>
             <if test="name != null and name != ''">
                 name = #{name},
@@ -109,11 +127,11 @@
             <if test="userTodaystatus != null and userTodaystatus != ''">
                 user_todaystatus = #{userTodaystatus},
             </if>
-            <if test="createTime != null">
-                create_time = #{createTime},
-            </if>
             <if test="updateTime != null">
                 update_time = #{updateTime},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime},
             </if>
         </set>
         where id = #{id}

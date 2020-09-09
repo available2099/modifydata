@@ -2,18 +2,18 @@ package com.demo.ai.controller;
 
 import com.demo.ai.entity.JdPlantbean;
 import com.demo.ai.service.JdPlantbeanService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.Resource;
 import java.math.BigInteger;
 
 /**
  * jd_plantBean(JdPlantbean)表控制层
  *
  * @author makejava
- * @since 2020-09-06 17:14:34
+ * @since 2020-09-09 12:02:43
  */
 @RestController
 @RequestMapping("jdPlantbean")
@@ -21,7 +21,7 @@ public class JdPlantbeanController {
     /**
      * 服务对象
      */
-    @Autowired
+    @Resource
     private JdPlantbeanService jdPlantbeanService;
 
     /**

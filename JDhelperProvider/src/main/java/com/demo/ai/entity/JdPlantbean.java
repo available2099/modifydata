@@ -8,10 +8,13 @@ import java.util.Date;
  * jd_plantBean(JdPlantbean)实体类
  *
  * @author makejava
- * @since 2020-09-06 17:14:31
+ * @since 2020-09-09 12:02:34
  */
 public class JdPlantbean implements Serializable {
-    private static final long serialVersionUID = -25838855344892223L;
+    private static final long serialVersionUID = -88121836440999579L;
+
+    private String uniqueId;
+
 
     private BigInteger id;
     /**
@@ -29,31 +32,31 @@ public class JdPlantbean implements Serializable {
     /**
      * 总请求次数
      */
-    private Integer count;
+    private Integer count=1;
     /**
      * 今天请求次数
      */
-    private Integer todaycount;
+    private Integer todaycount=1;
     /**
      * 今天剩余有效次数
      */
-    private Integer todayEffectcount;
+    private Integer todayEffectcount=4;
     /**
      * 用户是否可用
      */
-    private String userStatus;
+    private String userStatus="1";
     /**
      * 用户今天是否可用
      */
-    private String userTodaystatus;
+    private String userTodaystatus="1";
     /**
      * 创建时间
      */
-    private Date createTime;
+    private Date createTime=new Date();
     /**
      * 更新时间
      */
-    private Date updateTime;
+    private Date updateTime=new Date();
 
 
     public BigInteger getId() {
@@ -70,6 +73,14 @@ public class JdPlantbean implements Serializable {
 
     public void setUserMd5(String userMd5) {
         this.userMd5 = userMd5;
+    }
+
+    public String getUniqueId() {
+        return uniqueId;
+    }
+
+    public void setUniqueId(String uniqueId) {
+        this.uniqueId = uniqueId;
     }
 
     public String getName() {

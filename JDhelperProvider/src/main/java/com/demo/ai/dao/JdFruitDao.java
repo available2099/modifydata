@@ -11,7 +11,7 @@ import java.util.List;
  * jd_plantBean(JdFruit)表数据库访问层
  *
  * @author makejava
- * @since 2020-09-06 17:14:19
+ * @since 2020-09-09 12:02:13
  */
 @Mapper
 public interface JdFruitDao {

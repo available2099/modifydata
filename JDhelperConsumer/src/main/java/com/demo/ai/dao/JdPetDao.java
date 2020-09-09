@@ -11,7 +11,7 @@ import java.util.List;
  * jd_plantBean(JdPet)表数据库访问层
  *
  * @author makejava
- * @since 2020-09-06 17:14:27
+ * @since 2020-09-09 12:02:24
  */
 @Mapper
 public interface JdPetDao {

@@ -1,8 +1,7 @@
-package com.demo.ai.service.impl;
+package com.demo.ai.service;
 
 import com.demo.ai.dao.JdPlantbeanDao;
 import com.demo.ai.entity.JdPlantbean;
-import com.demo.ai.service.JdPlantbeanService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -13,7 +12,7 @@ import java.util.List;
  * jd_plantBean(JdPlantbean)表服务实现类
  *
  * @author makejava
- * @since 2020-09-06 17:14:33
+ * @since 2020-09-09 12:02:39
  */
 @Service("jdPlantbeanService")
 public class JdPlantbeanServiceImpl implements JdPlantbeanService {

@@ -8,10 +8,12 @@ import java.util.Date;
  * jd_plantBean(JdPet)实体类
  *
  * @author makejava
- * @since 2020-09-06 17:14:27
+ * @since 2020-09-09 12:02:23
  */
 public class JdPet implements Serializable {
-    private static final long serialVersionUID = 744975112801248061L;
+    private static final long serialVersionUID = -68828332355161940L;
+    private String uniqueId;
+
 
     private BigInteger id;
     /**
@@ -29,31 +31,32 @@ public class JdPet implements Serializable {
     /**
      * 总请求次数
      */
-    private Integer count;
+    private Integer count=1;
     /**
      * 今天请求次数
      */
-    private Integer todaycount;
+    private Integer todaycount=1;
     /**
      * 今天剩余有效次数
      */
-    private Integer todayEffectcount;
+    private Integer todayEffectcount=4;
     /**
      * 用户是否可用
      */
-    private String userStatus;
+    private String userStatus="1";
     /**
      * 用户今天是否可用
      */
-    private String userTodaystatus;
+    private String userTodaystatus="1";
     /**
      * 创建时间
      */
-    private Date createTime;
+    private Date createTime=new Date();
     /**
      * 更新时间
      */
-    private Date updateTime;
+    private Date updateTime=new Date();
+
 
 
     public BigInteger getId() {
@@ -70,6 +73,14 @@ public class JdPet implements Serializable {
 
     public void setUserMd5(String userMd5) {
         this.userMd5 = userMd5;
+    }
+
+    public String getUniqueId() {
+        return uniqueId;
+    }
+
+    public void setUniqueId(String uniqueId) {
+        this.uniqueId = uniqueId;
     }
 
     public String getName() {
@@ -128,20 +139,20 @@ public class JdPet implements Serializable {
         this.userTodaystatus = userTodaystatus;
     }
 
-    public Date getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
-
     public Date getUpdateTime() {
         return updateTime;
     }
 
     public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
     }
 
 }
