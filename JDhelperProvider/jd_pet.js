@@ -102,7 +102,9 @@ async function jdPet() {
         }).then((resp) => {
                 jdPetShareArr=[];
                 jdPetShareArr.push(resp.body);
-                }
+                console.log(`\n【查询jdFruitShareArr】\n`+resp.body);
+
+            }
             );
         await taskInit();
         if ($.taskInit.resultCode === '9999' || !$.taskInit.result) {

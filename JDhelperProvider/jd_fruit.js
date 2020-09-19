@@ -70,7 +70,9 @@ async function jdFruit() {
         }).then((resp) => {
                     jdFruitShareArr=[];
                     jdFruitShareArr.push(resp.body);
-                }
+                console.log(`\n【查询jdFruitShareArr】\n`+resp.body);
+
+            }
             );
 
         console.log(`\n【已成功兑换水果】${$.farmInfo.farmUserPro.winTimes}次\n`);
