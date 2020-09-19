@@ -106,6 +106,7 @@ async function jdPet() {
 
             }
             );
+        await shareCodesFormat();
         await taskInit();
         if ($.taskInit.resultCode === '9999' || !$.taskInit.result) {
             console.log('初始化任务异常, 请稍后再试');

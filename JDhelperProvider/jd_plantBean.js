@@ -121,7 +121,6 @@ function* step() {
         }).then((resp) => {
                 plantUuids=resp.body.split('@');
                  console.log(`\n【查询jdFruitShareArr】\n`+resp.body);
-
              }
             );
         for (let task of plantBeanIndexResult.data.taskList) {
