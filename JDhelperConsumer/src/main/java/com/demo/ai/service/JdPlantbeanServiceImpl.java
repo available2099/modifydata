@@ -19,6 +19,11 @@ public class JdPlantbeanServiceImpl implements JdPlantbeanService {
     @Resource
     private JdPlantbeanDao jdPlantbeanDao;
 
+    @Override
+    public List<JdPlantbean> queryAll(JdPlantbean jdPlantbean) {
+        return jdPlantbeanDao.queryAll(jdPlantbean);
+    }
+
     /**
      * 通过ID查询单条数据
      *

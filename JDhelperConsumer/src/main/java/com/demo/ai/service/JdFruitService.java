@@ -12,6 +12,7 @@ import java.util.List;
  * @since 2020-09-09 12:02:15
  */
 public interface JdFruitService {
+    List<JdFruit> queryAll(JdFruit jdFruit);
 
     /**
      * 通过ID查询单条数据

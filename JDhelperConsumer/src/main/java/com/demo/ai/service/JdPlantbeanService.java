@@ -12,6 +12,13 @@ import java.util.List;
  * @since 2020-09-09 12:02:37
  */
 public interface JdPlantbeanService {
+    /**
+     * 通过实体作为筛选条件查询
+     *
+     * @param jdPlantbean 实例对象
+     * @return 对象列表
+     */
+    List<JdPlantbean> queryAll(JdPlantbean jdPlantbean);
 
     /**
      * 通过ID查询单条数据

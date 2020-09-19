@@ -19,6 +19,11 @@ public class JdPetServiceImpl implements JdPetService {
     @Resource
     private JdPetDao jdPetDao;
 
+    @Override
+    public List<JdPet> queryAll(JdPet jdPet) {
+        return jdPetDao.queryAll(jdPet);
+    }
+
     /**
      * 通过ID查询单条数据
      *

@@ -12,6 +12,13 @@ import java.util.List;
  * @since 2020-09-09 12:02:26
  */
 public interface JdPetService {
+    /**
+     * 通过实体作为筛选条件查询
+     *
+     * @param jdPet 实例对象
+     * @return 对象列表
+     */
+    List<JdPet> queryAll(JdPet jdPet);
 
     /**
      * 通过ID查询单条数据

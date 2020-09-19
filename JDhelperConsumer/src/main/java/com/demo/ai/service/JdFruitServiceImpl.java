@@ -19,6 +19,11 @@ public class JdFruitServiceImpl implements JdFruitService {
     @Resource
     private JdFruitDao jdFruitDao;
 
+    @Override
+    public List<JdFruit> queryAll(JdFruit jdFruit) {
+        return this.jdFruitDao.queryAll(jdFruit);
+    }
+
     /**
      * 通过ID查询单条数据
      *
