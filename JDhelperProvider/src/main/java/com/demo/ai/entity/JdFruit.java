@@ -6,7 +6,7 @@ import java.util.Date;
 
 /**
  * jd_plantBean(JdFruit)实体类
- *
+ *只能助力4次
  * @author makejava
  * @since 2020-09-09 12:02:10
  */

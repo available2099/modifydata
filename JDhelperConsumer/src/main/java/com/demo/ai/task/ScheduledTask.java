@@ -12,7 +12,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -104,7 +103,7 @@ public class ScheduledTask {
         int j = 0;
         Set<JdPet> jdPetSet = new HashSet<>();
         for (JdPet jf : jdPetList){
-            if(j<5){
+            if(j<6){
                 jdPetSet.add(jf);
 
             }else {

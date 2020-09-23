@@ -6,7 +6,7 @@ import java.util.Date;
 
 /**
  * jd_plantBean(JdPet)实体类
- *
+ *助力5次
  * @author makejava
  * @since 2020-09-09 12:02:23
  */
