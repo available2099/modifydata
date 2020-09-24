@@ -96,4 +96,6 @@ public class RedisConfigTest {
         // pop之后 值会消失
         System.out.println(listOperations.leftPop("list:user"));
     }*/
+
+
 }

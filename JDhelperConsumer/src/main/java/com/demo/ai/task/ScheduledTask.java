@@ -12,6 +12,10 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -26,6 +30,13 @@ public class ScheduledTask {
     private JdPlantbeanService jdPlantbeanService;
     @Resource
     private RedisTemplate redisTemplate;
+    public static Date localDate2Date(LocalDate localDate) {
+        if(null == localDate) {
+            return null;
+        }
+        ZonedDateTime zonedDateTime = localDate.atStartOfDay(ZoneId.systemDefault());
+        return Date.from(zonedDateTime.toInstant());
+    }
 /*    @Scheduled(initialDelay=1000, fixedDelay = 2000)
     public void task1() {
         System.out.println("延迟1000毫秒后执行，任务执行完2000毫秒之后执行！");
@@ -39,14 +50,14 @@ public class ScheduledTask {
     public void task2() {
         System.out.println("延迟1000毫秒后执行，之后每2000毫秒执行一次！");
     }*/
-    @Scheduled(cron = "* 22 */1 * * ?")
-  //  @Scheduled(cron = "* */1 * * * ?")
+   // @Scheduled(cron = "* 22 */1 * * ?")
+    @Scheduled(cron = "* */1 * * * ?")
     public void taskQueryMysql() {
-        //4次需要弄5个人
+                //4次需要弄5个人
         JdFruit dFruit =new JdFruit();
         dFruit.setUserStatus("1");
-        dFruit.setCreateTime(null);
-        dFruit.setUpdateTime(null);
+        dFruit.setCreateTime(localDate2Date(LocalDate.now().plusDays(-1)));
+        dFruit.setUpdateTime(localDate2Date(LocalDate.now()));
         dFruit.setUserTodaystatus(null);
         dFruit.setTodayEffectcount(null);
         dFruit.setTodaycount(null);
@@ -54,8 +65,8 @@ public class ScheduledTask {
         //5次需要6个人
         JdPet dPet = new JdPet();
         dPet.setUserStatus("1");
-        dPet.setCreateTime(null);
-        dPet.setUpdateTime(null);
+        dPet.setCreateTime(localDate2Date(LocalDate.now().plusDays(-1)));
+        dPet.setUpdateTime(localDate2Date(LocalDate.now()));
         dPet.setUserTodaystatus(null);
         dPet.setTodayEffectcount(null);
         dPet.setTodaycount(null);
@@ -63,8 +74,8 @@ public class ScheduledTask {
         //3次需要4个人
         JdPlantbean dPlantbean = new JdPlantbean();
         dPlantbean.setUserStatus("1");
-        dPlantbean.setCreateTime(null);
-        dPlantbean.setUpdateTime(null);
+        dPlantbean.setCreateTime(localDate2Date(LocalDate.now().plusDays(-1)));
+        dPlantbean.setUpdateTime(localDate2Date(LocalDate.now()));
         dPlantbean.setUserTodaystatus(null);
         dPlantbean.setTodayEffectcount(null);
         dPlantbean.setTodaycount(null);

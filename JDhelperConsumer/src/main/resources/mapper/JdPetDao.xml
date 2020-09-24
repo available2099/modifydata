@@ -70,11 +70,11 @@
             <if test="userTodaystatus != null and userTodaystatus != ''">
                 and user_todaystatus = #{userTodaystatus}
             </if>
-            <if test="updateTime != null">
-                and update_time = #{updateTime}
-            </if>
             <if test="createTime != null">
-                and create_time = #{createTime}
+                and update_time &gt;= #{createTime}
+            </if>
+            <if test="updateTime != null">
+                and update_time &lt;= #{updateTime}
             </if>
         </where>
     </select>
