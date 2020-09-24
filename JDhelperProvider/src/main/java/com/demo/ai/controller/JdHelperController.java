@@ -13,7 +13,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -59,7 +58,7 @@ public class JdHelperController {
                     break;
                 case "pet":
                     Set<JdPet> petSet = redisTemplate.boundSetOps(subscriptionurl).members();
-                    md5 = "MTAxODc2NTEzMDAwMDAwMDAyNzIzNDI4OQ==";
+                    md5 = "";
                     for (JdPet fr : petSet) {
                         md5 = md5 + "@" + fr.getUserMd5();
                     }
