@@ -178,7 +178,7 @@ public class ScheduledTask {
         for (JdPet jf : jdPetList){
             //
             Set<JdPet>  fruitSet = redisTemplate.boundSetOps(jf.getUserMd5()).members();
-            if(fruitSet.size()==4){
+            if(fruitSet.size()==5){
                 for(JdPet jdf: fruitSet){
                     jdf.setUserStatus("0");
                     jdPetService.update(jdf);
