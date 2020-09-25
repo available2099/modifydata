@@ -50,8 +50,8 @@ public class ScheduledTask {
     public void task2() {
         System.out.println("延迟1000毫秒后执行，之后每2000毫秒执行一次！");
     }*/
-   // @Scheduled(cron = "* 22 */1 * * ?")
-    @Scheduled(cron = "* */1 * * * ?")
+    @Scheduled(cron = "* 22 */1 * * ?")
+   // @Scheduled(cron = "* */1 * * * ?")
     public void taskQueryMysql() {
                 //4次需要弄5个人
         JdFruit dFruit =new JdFruit();
