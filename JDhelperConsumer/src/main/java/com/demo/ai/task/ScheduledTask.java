@@ -53,8 +53,8 @@ public class ScheduledTask {
     public void task2() {
         System.out.println("延迟1000毫秒后执行，之后每2000毫秒执行一次！");
     }*/
-    @Scheduled(cron = "* 49 18 * * ?")
-   // @Scheduled(cron = "* 22 2,3 * * ?")
+   // @Scheduled(cron = "* 49 18 * * ?")
+    @Scheduled(cron = "* 22 2,3 * * ?")
     public void updataUserTodaystatus() {
         JdFruit dFruit = new JdFruit();
         dFruit.setUserTodaystatus("0");
@@ -69,8 +69,8 @@ public class ScheduledTask {
 
     }
 
-   // @Scheduled(cron = "* 22 0,1 * * ?")
-     @Scheduled(cron = "* 47 18 * * ?")
+    @Scheduled(cron = "* 22 0,1 * * ?")
+   //  @Scheduled(cron = "* 47 18 * * ?")
     public void taskQueryMysql() {
         deleteByPrex("user:");
         //4次需要弄5个人
