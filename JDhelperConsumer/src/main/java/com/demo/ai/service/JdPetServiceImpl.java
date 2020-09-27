@@ -71,6 +71,11 @@ public class JdPetServiceImpl implements JdPetService {
         return this.queryById(jdPet.getId());
     }
 
+    @Override
+    public void updateAll(JdPet jdPet) {
+        this.jdPetDao.updateAll(jdPet);
+    }
+
     /**
      * 通过主键删除数据
      *

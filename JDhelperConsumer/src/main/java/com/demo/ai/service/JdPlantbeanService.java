@@ -52,6 +52,7 @@ public interface JdPlantbeanService {
      * @return 实例对象
      */
     JdPlantbean update(JdPlantbean jdPlantbean);
+    void updateAll(JdPlantbean jdPlantbean);
 
     /**
      * 通过主键删除数据

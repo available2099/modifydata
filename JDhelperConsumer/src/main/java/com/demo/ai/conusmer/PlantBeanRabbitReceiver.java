@@ -38,6 +38,8 @@ public class PlantBeanRabbitReceiver {
         JdPlantbean jdPlantbean = new JdPlantbean();
         jdPlantbean.setUserMd5(md5);
         jdPlantbean.setUniqueId((String)message.getHeaders().get("spring_returned_message_correlation"));
+        jdPlantbean.setUserTodaystatus("1");
+        jdPlantbean.setUserStatus("1");
 
         jdPlantbeanService.insert(jdPlantbean);
         //手工ACK

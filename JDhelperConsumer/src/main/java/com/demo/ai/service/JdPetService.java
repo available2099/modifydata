@@ -52,6 +52,7 @@ public interface JdPetService {
      * @return 实例对象
      */
     JdPet update(JdPet jdPet);
+    void updateAll(JdPet jdPet);
 
     /**
      * 通过主键删除数据

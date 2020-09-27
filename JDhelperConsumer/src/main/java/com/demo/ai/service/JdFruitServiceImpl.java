@@ -71,6 +71,11 @@ public class JdFruitServiceImpl implements JdFruitService {
         return this.queryById(jdFruit.getId());
     }
 
+    @Override
+    public void updateAll(JdFruit jdFruit) {
+        this.jdFruitDao.updateAll(jdFruit);
+    }
+
     /**
      * 通过主键删除数据
      *

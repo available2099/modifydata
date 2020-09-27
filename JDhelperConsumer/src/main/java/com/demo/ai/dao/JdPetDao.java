@@ -57,6 +57,7 @@ public interface JdPetDao {
      * @return 影响行数
      */
     int update(JdPet jdPet);
+    int updateAll(JdPet jdPet);
 
     /**
      * 通过主键删除数据

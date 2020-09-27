@@ -136,7 +136,44 @@
         </set>
         where id = #{id}
     </update>
-
+    <update id="updateAll">
+        update lihao.jd_plantBean
+        <set>
+            <if test="userMd5 != null and userMd5 != ''">
+                user_md5 = #{userMd5},
+            </if>
+            <if test="uniqueId != null and uniqueId != ''">
+                unique_id = #{uniqueId},
+            </if>
+            <if test="name != null and name != ''">
+                name = #{name},
+            </if>
+            <if test="ip != null and ip != ''">
+                ip = #{ip},
+            </if>
+            <if test="count != null">
+                count = #{count},
+            </if>
+            <if test="todaycount != null">
+                todaycount = #{todaycount},
+            </if>
+            <if test="todayEffectcount != null">
+                today_effectcount = #{todayEffectcount},
+            </if>
+            <if test="userStatus != null and userStatus != ''">
+                user_status = #{userStatus},
+            </if>
+            <if test="userTodaystatus != null and userTodaystatus != ''">
+                user_todaystatus = #{userTodaystatus},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+        </set>
+    </update>
     <!--通过主键删除-->
     <delete id="deleteById">
         delete from lihao.jd_plantBean where id = #{id}

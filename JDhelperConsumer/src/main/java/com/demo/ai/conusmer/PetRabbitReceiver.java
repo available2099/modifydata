@@ -37,7 +37,9 @@ public class PetRabbitReceiver {
         String md5 = (String) message.getHeaders().get("md5");
         JdPet jdPet = new JdPet();
         jdPet.setUserMd5(md5);
+        jdPet.setUserStatus("1");
         jdPet.setUniqueId((String)message.getHeaders().get("spring_returned_message_correlation"));
+        jdPet.setUserTodaystatus("1");
 
         jdPetService.insert(jdPet);
 

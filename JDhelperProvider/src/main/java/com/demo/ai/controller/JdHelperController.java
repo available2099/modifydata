@@ -50,21 +50,21 @@ public class JdHelperController {
         try {
             switch (type) {
                 case "fruit":
-                    Set<JdFruit> fruitSet = redisTemplate.boundSetOps(subscriptionurl).members();
+                    Set<JdFruit> fruitSet = redisTemplate.boundSetOps("user:"+subscriptionurl).members();
                     md5 = "760517d4be0b4082a5c6cf5529e4599e";
                     for (JdFruit fr : fruitSet) {
                         md5 = md5 + "@" + fr.getUserMd5();
                     }
                     break;
                 case "pet":
-                    Set<JdPet> petSet = redisTemplate.boundSetOps(subscriptionurl).members();
+                    Set<JdPet> petSet = redisTemplate.boundSetOps("user:"+subscriptionurl).members();
                     md5 = "";
                     for (JdPet fr : petSet) {
                         md5 = md5 + "@" + fr.getUserMd5();
                     }
                     break;
                 case "plantbean":
-                    Set<JdPlantbean> PlantbeanSet = redisTemplate.boundSetOps(subscriptionurl).members();
+                    Set<JdPlantbean> PlantbeanSet = redisTemplate.boundSetOps("user:"+subscriptionurl).members();
                     md5 = "fnfkmp5hx2byrqss7h5jr5j2wtnlfimruj4z7ii";
                     for (JdPlantbean fr : PlantbeanSet) {
                         md5 = md5 + "@" + fr.getUserMd5();

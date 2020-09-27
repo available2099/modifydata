@@ -71,6 +71,11 @@ public class JdPlantbeanServiceImpl implements JdPlantbeanService {
         return this.queryById(jdPlantbean.getId());
     }
 
+    @Override
+    public void updateAll(JdPlantbean jdPlantbean) {
+        this.jdPlantbeanDao.updateAll(jdPlantbean);
+    }
+
     /**
      * 通过主键删除数据
      *

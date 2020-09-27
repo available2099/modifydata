@@ -58,6 +58,8 @@ public interface JdFruitDao {
      */
     int update(JdFruit jdFruit);
 
+    int updateAll(JdFruit jdFruit);
+
     /**
      * 通过主键删除数据
      *

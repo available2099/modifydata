@@ -57,7 +57,7 @@ public interface JdPlantbeanDao {
      * @return 影响行数
      */
     int update(JdPlantbean jdPlantbean);
-
+    int updateAll(JdPlantbean jdPlantbean);
     /**
      * 通过主键删除数据
      *

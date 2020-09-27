@@ -31,31 +31,31 @@ public class JdFruit implements Serializable {
     /**
      * 总请求次数
      */
-    private Integer count=1;
+    private Integer count;
     /**
      * 今天请求次数
      */
-    private Integer todaycount=1;
+    private Integer todaycount;
     /**
      * 今天剩余有效次数
      */
-    private Integer todayEffectcount=4;
+    private Integer todayEffectcount;
     /**
      * 用户是否可用
      */
-    private String userStatus="1";
+    private String userStatus;
     /**
      * 用户今天是否可用
      */
-    private String userTodaystatus="1";
+    private String userTodaystatus;
     /**
      * 创建时间
      */
-    private Date createTime=new Date();
+    private Date createTime;
     /**
      * 更新时间
      */
-    private Date updateTime=new Date();
+    private Date updateTime;
 
 
     public BigInteger getId() {

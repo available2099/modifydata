@@ -37,7 +37,9 @@ public class FruitRabbitReceiver {
         String md5 = (String) message.getHeaders().get("md5");
         JdFruit jdFruit = new JdFruit();
         jdFruit.setUserMd5(md5);
+        jdFruit.setUserStatus("1");
         jdFruit.setUniqueId((String)message.getHeaders().get("spring_returned_message_correlation"));
+        jdFruit.setUserTodaystatus("1");
         jdFruitService.insert(jdFruit);
         //手工ACK
         channel.basicAck(deliveryTag, false);
