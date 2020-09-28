@@ -128,12 +128,12 @@
             <if test="userTodaystatus != null and userTodaystatus != ''">
                 user_todaystatus = #{userTodaystatus},
             </if>
-            <if test="createTime != null">
+            <!--<if test="createTime != null">
                 create_time = #{createTime},
             </if>
             <if test="updateTime != null">
                 update_time = #{updateTime},
-            </if>
+            </if>-->
         </set>
         where id = #{id}
     </update>
@@ -169,12 +169,12 @@
             <if test="userTodaystatus != null and userTodaystatus != ''">
                 user_todaystatus = #{userTodaystatus},
             </if>
-            <if test="createTime != null">
+           <!-- <if test="createTime != null">
                 create_time = #{createTime},
             </if>
             <if test="updateTime != null">
                 update_time = #{updateTime},
-            </if>
+            </if>-->
         </set>
     </update>
 
