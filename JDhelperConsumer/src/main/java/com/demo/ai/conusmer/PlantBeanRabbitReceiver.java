@@ -41,6 +41,7 @@ public class PlantBeanRabbitReceiver {
         jdPlantbean.setUniqueId((String)message.getHeaders().get("spring_returned_message_correlation"));
         jdPlantbean.setUserTodaystatus("1");
         jdPlantbean.setUserStatus("1");
+        jdPlantbean.setTodaycount(1);
         jdPlantbean.setUpdateTime(new Date());
         jdPlantbean.setCreateTime(new Date());
         jdPlantbeanService.insert(jdPlantbean);

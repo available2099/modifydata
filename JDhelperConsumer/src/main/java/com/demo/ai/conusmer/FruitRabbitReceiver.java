@@ -41,6 +41,7 @@ public class FruitRabbitReceiver {
         jdFruit.setUserStatus("1");
         jdFruit.setUniqueId((String)message.getHeaders().get("spring_returned_message_correlation"));
         jdFruit.setUserTodaystatus("1");
+        jdFruit.setTodaycount(1);
         jdFruit.setUpdateTime(new Date());
         jdFruit.setCreateTime(new Date());
 

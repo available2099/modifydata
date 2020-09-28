@@ -41,6 +41,7 @@ public class PetRabbitReceiver {
         jdPet.setUserStatus("1");
         jdPet.setUniqueId((String)message.getHeaders().get("spring_returned_message_correlation"));
         jdPet.setUserTodaystatus("1");
+        jdPet.setTodaycount(1);
         jdPet.setUpdateTime(new Date());
         jdPet.setCreateTime(new Date());
 
