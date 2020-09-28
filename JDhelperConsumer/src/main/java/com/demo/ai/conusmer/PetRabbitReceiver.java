@@ -12,6 +12,7 @@ import org.springframework.messaging.handler.annotation.Headers;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 
+import java.util.Date;
 import java.util.Map;
 
 @Component
@@ -40,6 +41,8 @@ public class PetRabbitReceiver {
         jdPet.setUserStatus("1");
         jdPet.setUniqueId((String)message.getHeaders().get("spring_returned_message_correlation"));
         jdPet.setUserTodaystatus("1");
+        jdPet.setUpdateTime(new Date());
+        jdPet.setCreateTime(new Date());
 
         jdPetService.insert(jdPet);
 

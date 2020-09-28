@@ -12,6 +12,7 @@ import org.springframework.messaging.handler.annotation.Headers;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 
+import java.util.Date;
 import java.util.Map;
 
 @Component
@@ -40,7 +41,8 @@ public class PlantBeanRabbitReceiver {
         jdPlantbean.setUniqueId((String)message.getHeaders().get("spring_returned_message_correlation"));
         jdPlantbean.setUserTodaystatus("1");
         jdPlantbean.setUserStatus("1");
-
+        jdPlantbean.setUpdateTime(new Date());
+        jdPlantbean.setCreateTime(new Date());
         jdPlantbeanService.insert(jdPlantbean);
         //手工ACK
         channel.basicAck(deliveryTag, false);

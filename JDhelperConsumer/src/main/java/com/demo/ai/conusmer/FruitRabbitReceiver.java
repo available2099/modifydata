@@ -12,6 +12,7 @@ import org.springframework.messaging.handler.annotation.Headers;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 
+import java.util.Date;
 import java.util.Map;
 
 @Component
@@ -40,6 +41,9 @@ public class FruitRabbitReceiver {
         jdFruit.setUserStatus("1");
         jdFruit.setUniqueId((String)message.getHeaders().get("spring_returned_message_correlation"));
         jdFruit.setUserTodaystatus("1");
+        jdFruit.setUpdateTime(new Date());
+        jdFruit.setCreateTime(new Date());
+
         jdFruitService.insert(jdFruit);
         //手工ACK
         channel.basicAck(deliveryTag, false);
