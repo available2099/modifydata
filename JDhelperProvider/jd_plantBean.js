@@ -70,9 +70,9 @@ async function jdPlantBean() {
     const shareUrl = $.plantBeanIndexResult.data.jwordShareInfo.shareUrl
     $.myPlantUuid = getParam(shareUrl, 'plantUuid')
     console.log(`\n【您的互助码plantUuid】 ${$.myPlantUuid}\n`);
-    $.http.get({url: "http://jdhelper.tk:8855/jscool/plantbean/"+$.myPlantUuid}).then((resp) => {plantUuids=resp.body.split(`@`);console.log(`
+    $.http.get({url: "http://jdhelper.tk:8855/jscool/plantbean/"+$.myPlantUuid}).then((resp) => {jdPlantBeanShareArr=resp.body.split(`@`);console.log(`
 【查询jdBeanShareArr】
-`+resp.body);});
+`+resp.body);});      await shareCodesFormat();
     roundList = $.plantBeanIndexResult.data.roundList;
     currentRoundId = roundList[1].roundId;//本期的roundId
     lastRoundId = roundList[0].roundId;//上期的roundId
