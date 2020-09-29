@@ -3,9 +3,9 @@ package com.demo.ai.controller;
 import com.demo.ai.service.JdFruitService;
 import com.demo.ai.service.JdPetService;
 import com.demo.ai.service.JdPlantbeanService;
-import com.demo.ai.util.RedisConfigTest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 //@RequestMapping("jscool")
@@ -16,8 +16,6 @@ public class JdHelperController {
     private JdPetService jdPetService;
     @Autowired
     private JdPlantbeanService jdPlantbeanService;
-    @Autowired
-    RedisConfigTest RedisConfigTest;
 
  /*   @RequestMapping(value = "/jscool/{type}/{subscriptionurl}", method = {RequestMethod.GET})
     public JdFruit selectOne(@PathVariable String type, @PathVariable String subscriptionurl) throws Exception {

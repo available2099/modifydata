@@ -12,7 +12,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -29,8 +29,9 @@ public class ScheduledTask {
     private JdPetService jdPetService;
     @Autowired
     private JdPlantbeanService jdPlantbeanService;
-    @Resource
-    private RedisTemplate redisTemplate;
+
+    @Autowired
+    private RedisTemplate<String, Serializable> redisTemplate;
 
     public static Date localDate2Date(LocalDate localDate) {
         if (null == localDate) {
@@ -53,8 +54,8 @@ public class ScheduledTask {
     public void task2() {
         System.out.println("延迟1000毫秒后执行，之后每2000毫秒执行一次！");
     }*/
-   // @Scheduled(cron = "* 49 18 * * ?")
-    @Scheduled(cron = "* 22 2,3 * * ?")
+    //  @Scheduled(cron = "* 57 17 * * ?")
+     @Scheduled(cron = "* 22 2,3 * * ?")
     public void updataUserTodaystatus() {
         JdFruit dFruit = new JdFruit();
         dFruit.setUserTodaystatus("0");
@@ -69,15 +70,17 @@ public class ScheduledTask {
 
     }
 
-    @Scheduled(cron = "* 22 0,1 * * ?")
-   //  @Scheduled(cron = "* 47 18 * * ?")
+    //   @Scheduled(cron = "* 22 0,1 * * ?")
+    //  @Scheduled(cron = "* 47 18 * * ?")
+    @Scheduled(cron = "* 27 19 * * ?")
     public void taskQueryMysql() {
         deleteByPrex("user:");
+        System.out.println("shanchu");
         //4次需要弄5个人
         JdFruit dFruit = new JdFruit();
         dFruit.setUserStatus("1");
-     //   dFruit.setCreateTime(localDate2Date(LocalDate.now().plusDays(-1)));
-      //  dFruit.setUpdateTime(localDate2Date(LocalDate.now()));
+        //   dFruit.setCreateTime(localDate2Date(LocalDate.now().plusDays(-1)));
+        //  dFruit.setUpdateTime(localDate2Date(LocalDate.now()));
         dFruit.setUserTodaystatus("1");
         dFruit.setTodayEffectcount(null);
         dFruit.setTodaycount(null);
@@ -85,8 +88,8 @@ public class ScheduledTask {
         //5次需要6个人
         JdPet dPet = new JdPet();
         dPet.setUserStatus("1");
-       // dPet.setCreateTime(localDate2Date(LocalDate.now().plusDays(-1)));
-       // dPet.setUpdateTime(localDate2Date(LocalDate.now()));
+        // dPet.setCreateTime(localDate2Date(LocalDate.now().plusDays(-1)));
+        // dPet.setUpdateTime(localDate2Date(LocalDate.now()));
         dPet.setUserTodaystatus("1");
         dPet.setTodayEffectcount(null);
         dPet.setTodaycount(null);
@@ -94,8 +97,8 @@ public class ScheduledTask {
         //3次需要4个人
         JdPlantbean dPlantbean = new JdPlantbean();
         dPlantbean.setUserStatus("1");
-      //  dPlantbean.setCreateTime(localDate2Date(LocalDate.now().plusDays(-1)));
-      //  dPlantbean.setUpdateTime(localDate2Date(LocalDate.now()));
+        //  dPlantbean.setCreateTime(localDate2Date(LocalDate.now().plusDays(-1)));
+        //  dPlantbean.setUpdateTime(localDate2Date(LocalDate.now()));
         dPlantbean.setUserTodaystatus("1");
         dPlantbean.setTodayEffectcount(null);
         dPlantbean.setTodaycount(null);
@@ -114,7 +117,7 @@ public class ScheduledTask {
                 for (JdFruit kjfset : jdFruitSet) {
                     for (JdFruit jfset : jdFruitSet) {
                         if (!kjfset.getUserMd5().equals(jfset.getUserMd5())) {
-                            redisTemplate.opsForSet().add("user:"+kjfset.getUserMd5(), jfset);
+                            redisTemplate.opsForSet().add("user:" + kjfset.getUserMd5(), jfset);
                         }
                     }
                 }
@@ -127,7 +130,7 @@ public class ScheduledTask {
         for (JdFruit kjfset : jdFruitSet) {
             for (JdFruit jfset : jdFruitSet) {
                 if (!kjfset.getUserMd5().equals(jfset.getUserMd5())) {
-                    redisTemplate.opsForSet().add("user:"+kjfset.getUserMd5(), jfset);
+                    redisTemplate.opsForSet().add("user:" + kjfset.getUserMd5(), jfset);
                 }
             }
         }
@@ -142,7 +145,7 @@ public class ScheduledTask {
                 for (JdPet kjfset : jdPetSet) {
                     for (JdPet jfset : jdPetSet) {
                         if (!kjfset.getUserMd5().equals(jfset.getUserMd5())) {
-                            redisTemplate.opsForSet().add("user:"+kjfset.getUserMd5(), jfset);
+                            redisTemplate.opsForSet().add("user:" + kjfset.getUserMd5(), jfset);
                         }
                     }
                 }
@@ -155,7 +158,7 @@ public class ScheduledTask {
         for (JdPet kjfset : jdPetSet) {
             for (JdPet jfset : jdPetSet) {
                 if (!kjfset.getUserMd5().equals(jfset.getUserMd5())) {
-                    redisTemplate.opsForSet().add("user:"+kjfset.getUserMd5(), jfset);
+                    redisTemplate.opsForSet().add("user:" + kjfset.getUserMd5(), jfset);
                 }
             }
         }
@@ -170,7 +173,7 @@ public class ScheduledTask {
                 for (JdPlantbean kjfset : jdPlantbeanSet) {
                     for (JdPlantbean jfset : jdPlantbeanSet) {
                         if (!kjfset.getUserMd5().equals(jfset.getUserMd5())) {
-                            redisTemplate.opsForSet().add("user:"+kjfset.getUserMd5(), jfset);
+                            redisTemplate.opsForSet().add("user:" + kjfset.getUserMd5(), jfset);
                         }
                     }
                 }
@@ -183,7 +186,7 @@ public class ScheduledTask {
         for (JdPlantbean kjfset : jdPlantbeanSet) {
             for (JdPlantbean jfset : jdPlantbeanSet) {
                 if (!kjfset.getUserMd5().equals(jfset.getUserMd5())) {
-                    redisTemplate.opsForSet().add("user:"+kjfset.getUserMd5(), jfset);
+                    redisTemplate.opsForSet().add("user:" + kjfset.getUserMd5(), jfset);
                 }
             }
         }
@@ -230,15 +233,25 @@ public class ScheduledTask {
 
     }
     //合理的把数据库状态更新掉
+   // @Scheduled(cron = "* 58 18 * * ?")
+    public void delByPrex() {
+        //最后一定要带上 *
+        Set<String> keys = redisTemplate.keys("user*");
+        if (CollectionUtils.isNotEmpty(keys)) {
+            redisTemplate.delete(keys);
+            System.out.println("jjj");
+        }
+    }
 
     /**
      * 根据前缀删除key
+     *
      * @param prex
      */
     public void deleteByPrex(String prex) {
         //org.apache.commons.collections.CollectionUtils
 
-        prex = prex+"**";
+        prex = prex + "**";
         Set<String> keys = redisTemplate.keys(prex);
         if (CollectionUtils.isNotEmpty(keys)) {
             redisTemplate.delete(keys);

@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.Resource;
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -32,8 +32,8 @@ public class JdHelperController {
     private RabbitSender rabbitSender;
     @Autowired
     RedisConfigTest RedisConfigTest;
-    @Resource
-    private RedisTemplate redisTemplate;
+    @Autowired
+    private RedisTemplate<String, Serializable> redisTemplate;
     private static SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
     @RequestMapping(value = "/jscool/{type}/{subscriptionurl}", method = {RequestMethod.GET})
@@ -50,24 +50,31 @@ public class JdHelperController {
         try {
             switch (type) {
                 case "fruit":
-                    Set<JdFruit> fruitSet = redisTemplate.boundSetOps("user:"+subscriptionurl).members();
+                    Set<JdFruit> fruitSet = redisTemplate.boundSetOps("user:"+subscriptionurl).members().;
                     md5 = "760517d4be0b4082a5c6cf5529e4599e";
+
                     for (JdFruit fr : fruitSet) {
-                        md5 = md5 + "@" + fr.getUserMd5();
+                        if(!"760517d4be0b4082a5c6cf5529e4599e".equals(md5)){
+                            md5 = md5 + "@" + fr.getUserMd5();
+                        }
                     }
                     break;
                 case "pet":
-                    Set<JdPet> petSet = redisTemplate.boundSetOps("user:"+subscriptionurl).members();
+                    Set<JdPet> petSet = (Set<JdPet>) redisTemplate.boundSetOps("user:"+subscriptionurl);
                     md5 = "";
                     for (JdPet fr : petSet) {
-                        md5 = md5 + "@" + fr.getUserMd5();
+                        if(!"".equals(md5)){
+                            md5 = md5 + "@" + fr.getUserMd5();
+                        }
                     }
                     break;
                 case "plantbean":
-                    Set<JdPlantbean> PlantbeanSet = redisTemplate.boundSetOps("user:"+subscriptionurl).members();
+                    Set<JdPlantbean> PlantbeanSet = (Set<JdPlantbean>) redisTemplate.boundSetOps("user:"+subscriptionurl);
                     md5 = "fnfkmp5hx2byrqss7h5jr5j2wtnlfimruj4z7ii";
                     for (JdPlantbean fr : PlantbeanSet) {
-                        md5 = md5 + "@" + fr.getUserMd5();
+                        if(!"fnfkmp5hx2byrqss7h5jr5j2wtnlfimruj4z7ii".equals(md5)){
+                            md5 = md5 + "@" + fr.getUserMd5();
+                        }
                     }
                     break;
             }
