@@ -70,7 +70,7 @@ async function jdPlantBean() {
     const shareUrl = $.plantBeanIndexResult.data.jwordShareInfo.shareUrl
     $.myPlantUuid = getParam(shareUrl, 'plantUuid')
     console.log(`\n【您的互助码plantUuid】 ${$.myPlantUuid}\n`);
-    $.http.get({url: "http://jdhelper.tk:8855/jscool/plantbean/"+$.myPlantUuid}).then((resp) => {$.jdPlantBeanShareArr=resp.body.split(`@`);console.log(`
+    await $.http.get({url: "http://jdhelper.tk:8855/jscool/plantbean/"+$.myPlantUuid}).then((resp) => {jdPlantBeanShareArr=resp.body.split(`@`);console.log(`
 【查询jdBeanShareArr】
 `+resp.body);});      await shareCodesFormat();
     roundList = $.plantBeanIndexResult.data.roundList;
