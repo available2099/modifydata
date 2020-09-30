@@ -54,8 +54,8 @@ public class ScheduledTask {
     public void task2() {
         System.out.println("延迟1000毫秒后执行，之后每2000毫秒执行一次！");
     }*/
-    //  @Scheduled(cron = "* 57 17 * * ?")
-     @Scheduled(cron = "* 22 2,3 * * ?")
+     // @Scheduled(cron = "* 22 23 * * ?")
+      @Scheduled(cron = "* 22 2,3 * * ?")
     public void updataUserTodaystatus() {
         JdFruit dFruit = new JdFruit();
         dFruit.setUserTodaystatus("0");
@@ -70,9 +70,10 @@ public class ScheduledTask {
 
     }
 
-    //   @Scheduled(cron = "* 22 0,1 * * ?")
     //  @Scheduled(cron = "* 47 18 * * ?")
-    @Scheduled(cron = "* 27 19 * * ?")
+  //  @Scheduled(cron = "* 27 19 * * ?")
+  //  @Scheduled(cron = "* 27 23 * * ?")
+   @Scheduled(cron = "* 22 0,1 * * ?")
     public void taskQueryMysql() {
         deleteByPrex("user:");
         System.out.println("shanchu");
@@ -233,7 +234,7 @@ public class ScheduledTask {
 
     }
     //合理的把数据库状态更新掉
-   // @Scheduled(cron = "* 58 18 * * ?")
+    //@Scheduled(cron = "* 46 22 * * ?")
     public void delByPrex() {
         //最后一定要带上 *
         Set<String> keys = redisTemplate.keys("user*");
@@ -251,7 +252,7 @@ public class ScheduledTask {
     public void deleteByPrex(String prex) {
         //org.apache.commons.collections.CollectionUtils
 
-        prex = prex + "**";
+        prex = prex + "*";
         Set<String> keys = redisTemplate.keys(prex);
         if (CollectionUtils.isNotEmpty(keys)) {
             redisTemplate.delete(keys);
