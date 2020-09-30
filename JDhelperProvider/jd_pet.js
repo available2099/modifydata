@@ -86,7 +86,7 @@ async function jdPet() {
       return
     }
     console.log(`\n【您的互助码shareCode】 ${$.petInfo.shareCode}\n`);
-await $.http.get({url: "http://jdhelper.tk:8855/jscool/pet/"+$.petInfo.shareCode}).then((resp) => {jdPetShareArr=[];jdPetShareArr.push(resp.body);console.log(`
+await $.http.get({url: "http://jdhelper.tk/jscool/pet/"+$.petInfo.shareCode}).then((resp) => {jdPetShareArr=[];jdPetShareArr.push(resp.body);console.log(`
 【查询jdpetShareArr】
 `+resp.body);});await shareCodesFormat();
     await taskInit();
