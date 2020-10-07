@@ -8,7 +8,8 @@ ENV OPTS_PROFILES_ACTIVE="prod" \
 
 RUN mkdir -p /data/
 COPY ./JDhelperProvider-1.0.0.jar /data/app.jar
-
+HEALTHCHECK --interval=5s --timeout=2s --retries=12 \
+  CMD curl --silent --fail localhost:8855/healthz || exit 1
 VOLUME ["/data/logs"]
 WORKDIR  /data
 EXPOSE 8080 8081

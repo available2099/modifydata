@@ -54,8 +54,8 @@ public class ScheduledTask {
     public void task2() {
         System.out.println("延迟1000毫秒后执行，之后每2000毫秒执行一次！");
     }*/
-     // @Scheduled(cron = "* 22 23 * * ?")
-      @Scheduled(cron = "* 22 2,3 * * ?")
+    // @Scheduled(cron = "* 22 23 * * ?")
+    @Scheduled(cron = "* 22 2,3 * * ?")
     public void updataUserTodaystatus() {
         JdFruit dFruit = new JdFruit();
         dFruit.setUserTodaystatus("0");
@@ -67,13 +67,17 @@ public class ScheduledTask {
         JdPlantbean dPlantbean = new JdPlantbean();
         dPlantbean.setUserTodaystatus("0");
         jdPlantbeanService.updateAll(dPlantbean);
+        //初始化库存数量
+        redisTemplate.opsForValue().set("numfruit", 5);
+        redisTemplate.opsForValue().set("numplantbean", 9);
+        redisTemplate.opsForValue().set("numpet", 0);
 
     }
 
     //  @Scheduled(cron = "* 47 18 * * ?")
-  //  @Scheduled(cron = "* 27 19 * * ?")
-  //  @Scheduled(cron = "* 27 23 * * ?")
-   @Scheduled(cron = "* 22 0,1 * * ?")
+    //  @Scheduled(cron = "* 27 19 * * ?")
+    //  @Scheduled(cron = "* 27 23 * * ?")
+    @Scheduled(cron = "* 22 0,1 * * ?")
     public void taskQueryMysql() {
         deleteByPrex("user:");
         System.out.println("shanchu");
@@ -110,7 +114,7 @@ public class ScheduledTask {
         int i = 0;
         Set<JdFruit> jdFruitSet = new HashSet<>();
         for (JdFruit jf : jdFruitList) {
-            if (i < 4) {
+            if (i < 5) {
                 jdFruitSet.add(jf);
 
             } else {
@@ -166,7 +170,7 @@ public class ScheduledTask {
         int k = 0;
         Set<JdPlantbean> jdPlantbeanSet = new HashSet<>();
         for (JdPlantbean jf : jdPlantbeanList) {
-            if (k < 3) {
+            if (k < 4) {
                 jdPlantbeanSet.add(jf);
 
             } else {
@@ -233,6 +237,7 @@ public class ScheduledTask {
         }*/
 
     }
+
     //合理的把数据库状态更新掉
     //@Scheduled(cron = "* 46 22 * * ?")
     public void delByPrex() {

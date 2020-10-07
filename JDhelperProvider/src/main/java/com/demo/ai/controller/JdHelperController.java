@@ -10,6 +10,7 @@ import com.demo.ai.service.JdPlantbeanService;
 import com.demo.ai.util.RedisConfigTest;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -18,10 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -48,28 +46,79 @@ public class JdHelperController {
     public static JavaType getCollectionType(ObjectMapper obj, Class<?> collectionClass, Class<?>... elementClasses) {
         return obj.getTypeFactory().constructParametricType(collectionClass, elementClasses);
     }
+
+    @RequestMapping(value = "/initSku", method = RequestMethod.GET)
+    public String initSku() {
+        //初始化库存数量
+        redisTemplate.opsForValue().set("numfruit", 5);
+        redisTemplate.opsForValue().set("numplantbean", 9);
+        redisTemplate.opsForValue().set("numpet", 0);
+        //初始化实际卖出的商品数量0
+        return "初始化库存成功";
+    }
+
     @RequestMapping(value = "/{type}/{subscriptionurl}", method = {RequestMethod.GET})
-    public String queryData(@PathVariable String type, @PathVariable String subscriptionurl, HttpServletRequest request,@RequestParam("ti") String time) throws Exception {
-        System.out.println("time is :"+time);
+    public String queryData(@PathVariable String type, @PathVariable String subscriptionurl, HttpServletRequest request, @RequestParam("ti") String time) throws Exception {
+        ObjectMapper obj = new ObjectMapper();
+
+        //计算时间差
+        Long useTime = System.currentTimeMillis() - Long.parseLong(time);
+        System.out.println("接口请求时间：" + useTime);
+        System.out.println("time is :" + time);
         String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new java.util.Date(Long.parseLong(time)));
         // 将时间戳转为当前时间
-       // LocalDateTime localDateTime = LocalDateTime.ofEpochSecond(Long.parseLong(time), 0, ZoneOffset.ofHours(8));
+        // LocalDateTime localDateTime = LocalDateTime.ofEpochSecond(Long.parseLong(time), 0, ZoneOffset.ofHours(8));
         // 2020-02-03T13:30:44
-        System.out.println("请求时间"+date);
+        System.out.println("请求时间" + date);
+
+
         //判断长度
-        if(subscriptionurl.length() > 20){
+        if (subscriptionurl.length() > 20) {
             String ip = getIpAddress(request);
             System.out.println("ip是多少：" + ip);
             //查询一下redis是否有数据，有的话返回空
-            if (redisTemplate.opsForValue().get("time:" + subscriptionurl) == null ) {
+            if (redisTemplate.opsForValue().get("time:" + subscriptionurl) == null) {
 
-                redisTemplate.opsForValue().set("time:" + subscriptionurl, ip,59, TimeUnit.MINUTES);
+                String[] md5arry = new String[]{"760517d4be0b4082a5c6cf5529e4599e","fnfkmp5hx2byrqss7h5jr5j2wtnlfimruj4z7ii"};
+                String md5 = "";
+                if(!ArrayUtils.contains(md5arry, subscriptionurl)){
+                    redisTemplate.setEnableTransactionSupport(true);//开启事务的支持
+                    redisTemplate.watch("num" + type);//watch某个key,当该key被其它客户端改变时,则会中断当前的操作
+
+                    String numTemp = obj.writeValueAsString(redisTemplate.opsForValue().get("num" + type));
+
+                    long num = Long.valueOf(numTemp);//获取当前商品的数量
+                    if (num <= 0) {//检查当前商品的数量
+                        System.out.println("----"+type+"----秒杀已结束");
+                    } else {
+                        redisTemplate.multi();//事务
+                        redisTemplate.boundValueOps("num" + type).decrement(1);//下单成功 商品数量减1
+                        List<Object> exec = redisTemplate.exec();//执行事务
+                        if (exec == null || exec.size() == 0) {
+                            System.out.println("----"+type+"----秒杀失败");
+                        } else {
+                            System.out.println("----"+type+"----秒杀成功");
+                            switch (type) {
+                                case "fruit": md5 = "760517d4be0b4082a5c6cf5529e4599e";
+                                    break;
+                                case "pet": md5 ="";
+                                    break;
+                                case "plantbean":md5 = "fnfkmp5hx2byrqss7h5jr5j2wtnlfimruj4z7ii";
+                                    break;
+                            }
+                        }
+                    }
+
+                }
+
+
+              redisTemplate.opsForValue().set("time:" + subscriptionurl, ip, 59, TimeUnit.MINUTES);
 
                 if ("fruit".equals(type) || "plantbean".equals(type) || "pet".equals(type)) {
                     Map<String, Object> properties = new HashMap<>();
                     properties.put("md5", subscriptionurl);
                     properties.put("send_time", simpleDateFormat.format(new Date()));
-                    userScheduler.execute(()->{
+                    userScheduler.execute(() -> {
                                 try {
                                     rabbitSender.send(type, properties);
                                 } catch (Exception e) {
@@ -78,20 +127,18 @@ public class JdHelperController {
                             }
                     );
                 }
-                ObjectMapper obj = new ObjectMapper();
                 System.out.println("doreturndata");
-                String md5 = "";
+
                 try {
                     switch (type) {
                         case "fruit":
                             Set<Serializable> fruitSetSerializable = redisTemplate.boundSetOps("user:" + subscriptionurl).members();
-                            md5 = "760517d4be0b4082a5c6cf5529e4599e";
                             String json = obj.writeValueAsString(fruitSetSerializable);
                             JavaType javaType = getCollectionType(obj, Set.class, JdFruit.class);
 
                             Set<JdFruit> fruitSet = obj.readValue(json, javaType);
                             for (JdFruit fr : fruitSet) {
-                                if (md5.equals(subscriptionurl)) {
+                                if ("".equals(md5)) {
                                     md5 = fr.getUserMd5();
                                 } else {
                                     md5 = md5 + "@" + fr.getUserMd5();
@@ -100,7 +147,6 @@ public class JdHelperController {
                             break;
                         case "pet":
                             Set<Serializable> petSetSerializable = redisTemplate.boundSetOps("user:" + subscriptionurl).members();
-                            md5 = "";
                             String jsonJdPet = obj.writeValueAsString(petSetSerializable);
                             JavaType javaTypeJdPet = getCollectionType(obj, Set.class, JdPet.class);
 
@@ -115,13 +161,12 @@ public class JdHelperController {
                             break;
                         case "plantbean":
                             Set<Serializable> PlantbeanSetSerializable = redisTemplate.boundSetOps("user:" + subscriptionurl).members();
-                            md5 = "fnfkmp5hx2byrqss7h5jr5j2wtnlfimruj4z7ii";
                             String jsonJdPlantbean = obj.writeValueAsString(PlantbeanSetSerializable);
                             JavaType javaTypeJdPlantbean = getCollectionType(obj, Set.class, JdPlantbean.class);
 
                             Set<JdPlantbean> PlantbeanSet = obj.readValue(jsonJdPlantbean, javaTypeJdPlantbean);
                             for (JdPlantbean fr : PlantbeanSet) {
-                                if (md5.equals(subscriptionurl)) {
+                                if ("".equals(md5)) {
                                     md5 = fr.getUserMd5();
                                 } else {
                                     md5 = md5 + "@" + fr.getUserMd5();
@@ -151,19 +196,19 @@ public class JdHelperController {
     @RequestMapping(value = "/jscool/{type}/{subscriptionurl}", method = {RequestMethod.GET})
     public String selectOne(@PathVariable String type, @PathVariable String subscriptionurl, HttpServletRequest request) throws Exception {
         //判断长度
-        if(subscriptionurl.length() > 20){
+        if (subscriptionurl.length() > 20) {
             String ip = getIpAddress(request);
             System.out.println("ip是多少：" + ip);
             //查询一下redis是否有数据，有的话返回空
-            if (redisTemplate.opsForValue().get("time:" + subscriptionurl) == null ) {
+            if (redisTemplate.opsForValue().get("time:" + subscriptionurl) == null) {
 
-                redisTemplate.opsForValue().set("time:" + subscriptionurl, ip,59, TimeUnit.MINUTES);
+                redisTemplate.opsForValue().set("time:" + subscriptionurl, ip, 59, TimeUnit.MINUTES);
 
                 if ("fruit".equals(type) || "plantbean".equals(type) || "pet".equals(type)) {
                     Map<String, Object> properties = new HashMap<>();
                     properties.put("md5", subscriptionurl);
                     properties.put("send_time", simpleDateFormat.format(new Date()));
-                    userScheduler.execute(()->{
+                    userScheduler.execute(() -> {
                                 try {
                                     rabbitSender.send(type, properties);
                                 } catch (Exception e) {
