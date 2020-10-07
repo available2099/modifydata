@@ -196,11 +196,47 @@ public class JdHelperController {
     @RequestMapping(value = "/jscool/{type}/{subscriptionurl}", method = {RequestMethod.GET})
     public String selectOne(@PathVariable String type, @PathVariable String subscriptionurl, HttpServletRequest request) throws Exception {
         //判断长度
+        ObjectMapper obj = new ObjectMapper();
         if (subscriptionurl.length() > 20) {
             String ip = getIpAddress(request);
             System.out.println("ip是多少：" + ip);
             //查询一下redis是否有数据，有的话返回空
             if (redisTemplate.opsForValue().get("time:" + subscriptionurl) == null) {
+                String[] md5arry = new String[]{"760517d4be0b4082a5c6cf5529e4599e", "fnfkmp5hx2byrqss7h5jr5j2wtnlfimruj4z7ii"};
+                String md5 = "";
+                if (!ArrayUtils.contains(md5arry, subscriptionurl)) {
+                    redisTemplate.setEnableTransactionSupport(true);//开启事务的支持
+                    redisTemplate.watch("num" + type);//watch某个key,当该key被其它客户端改变时,则会中断当前的操作
+
+                    String numTemp = obj.writeValueAsString(redisTemplate.opsForValue().get("num" + type));
+
+                    long num = Long.valueOf(numTemp);//获取当前商品的数量
+                    if (num <= 0) {//检查当前商品的数量
+                        System.out.println("----" + type + "----秒杀已结束");
+                    } else {
+                        redisTemplate.multi();//事务
+                        redisTemplate.boundValueOps("num" + type).decrement(1);//下单成功 商品数量减1
+                        List<Object> exec = redisTemplate.exec();//执行事务
+                        if (exec == null || exec.size() == 0) {
+                            System.out.println("----" + type + "----秒杀失败");
+                        } else {
+                            System.out.println("----" + type + "----秒杀成功");
+                            switch (type) {
+                                case "fruit":
+                                    md5 = "760517d4be0b4082a5c6cf5529e4599e";
+                                    break;
+                                case "pet":
+                                    md5 = "";
+                                    break;
+                                case "plantbean":
+                                    md5 = "fnfkmp5hx2byrqss7h5jr5j2wtnlfimruj4z7ii";
+                                    break;
+                            }
+                        }
+                    }
+
+                }
+
 
                 redisTemplate.opsForValue().set("time:" + subscriptionurl, ip, 59, TimeUnit.MINUTES);
 
@@ -217,20 +253,18 @@ public class JdHelperController {
                             }
                     );
                 }
-                ObjectMapper obj = new ObjectMapper();
                 System.out.println("doreturndata");
-                String md5 = "";
+
                 try {
                     switch (type) {
                         case "fruit":
                             Set<Serializable> fruitSetSerializable = redisTemplate.boundSetOps("user:" + subscriptionurl).members();
-                            md5 = "760517d4be0b4082a5c6cf5529e4599e";
                             String json = obj.writeValueAsString(fruitSetSerializable);
                             JavaType javaType = getCollectionType(obj, Set.class, JdFruit.class);
 
                             Set<JdFruit> fruitSet = obj.readValue(json, javaType);
                             for (JdFruit fr : fruitSet) {
-                                if (md5.equals(subscriptionurl)) {
+                                if ("".equals(md5)) {
                                     md5 = fr.getUserMd5();
                                 } else {
                                     md5 = md5 + "@" + fr.getUserMd5();
@@ -239,7 +273,6 @@ public class JdHelperController {
                             break;
                         case "pet":
                             Set<Serializable> petSetSerializable = redisTemplate.boundSetOps("user:" + subscriptionurl).members();
-                            md5 = "";
                             String jsonJdPet = obj.writeValueAsString(petSetSerializable);
                             JavaType javaTypeJdPet = getCollectionType(obj, Set.class, JdPet.class);
 
@@ -254,13 +287,12 @@ public class JdHelperController {
                             break;
                         case "plantbean":
                             Set<Serializable> PlantbeanSetSerializable = redisTemplate.boundSetOps("user:" + subscriptionurl).members();
-                            md5 = "fnfkmp5hx2byrqss7h5jr5j2wtnlfimruj4z7ii";
                             String jsonJdPlantbean = obj.writeValueAsString(PlantbeanSetSerializable);
                             JavaType javaTypeJdPlantbean = getCollectionType(obj, Set.class, JdPlantbean.class);
 
                             Set<JdPlantbean> PlantbeanSet = obj.readValue(jsonJdPlantbean, javaTypeJdPlantbean);
                             for (JdPlantbean fr : PlantbeanSet) {
-                                if (md5.equals(subscriptionurl)) {
+                                if ("".equals(md5)) {
                                     md5 = fr.getUserMd5();
                                 } else {
                                     md5 = md5 + "@" + fr.getUserMd5();
