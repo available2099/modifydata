@@ -60,7 +60,8 @@ public class JdHelperController {
     @RequestMapping(value = "/{type}/{subscriptionurl}", method = {RequestMethod.GET})
     public String queryData(@PathVariable String type, @PathVariable String subscriptionurl, HttpServletRequest request, @RequestParam("ti") String time) throws Exception {
         ObjectMapper obj = new ObjectMapper();
-
+        String userAgent = request.getHeader("user-agent");
+        System.out.println("客户端请求类型："+userAgent);
         //计算时间差
         Long useTime = System.currentTimeMillis() - Long.parseLong(time);
         System.out.println("接口请求时间：" + useTime);
@@ -73,7 +74,7 @@ public class JdHelperController {
 
 
         //判断长度
-        if (subscriptionurl.length() > 20) {
+        if (userAgent.contains("Quantumult") && subscriptionurl.length() > 20) {
             String ip = getIpAddress(request);
             System.out.println("ip是多少：" + ip);
             //查询一下redis是否有数据，有的话返回空
@@ -195,9 +196,11 @@ public class JdHelperController {
 
     @RequestMapping(value = "/jscool/{type}/{subscriptionurl}", method = {RequestMethod.GET})
     public String selectOne(@PathVariable String type, @PathVariable String subscriptionurl, HttpServletRequest request) throws Exception {
+        String userAgent = request.getHeader("user-agent");
+        System.out.println("客户端请求类型："+userAgent);
         //判断长度
         ObjectMapper obj = new ObjectMapper();
-        if (subscriptionurl.length() > 20) {
+        if (userAgent.contains("Quantumult") && subscriptionurl.length() > 20) {
             String ip = getIpAddress(request);
             System.out.println("ip是多少：" + ip);
             //查询一下redis是否有数据，有的话返回空
