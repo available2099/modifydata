@@ -68,15 +68,16 @@ public class ScheduledTask {
         dPlantbean.setUserTodaystatus("0");
         jdPlantbeanService.updateAll(dPlantbean);
         //初始化库存数量
-        redisTemplate.opsForValue().set("numfruit", 5);
-        redisTemplate.opsForValue().set("numplantbean",9);
+        redisTemplate.opsForValue().set("numfruit", 2);
+        redisTemplate.opsForValue().set("numplantbean",7);
         redisTemplate.opsForValue().set("numpet", 0);
 
     }
 
     //  @Scheduled(cron = "* 47 18 * * ?")
     //  @Scheduled(cron = "* 27 19 * * ?")
-  //    @Scheduled(cron = "* 09 15 * * ?")
+   //  @Scheduled(cron = "* 10 16 * * ?")
+
     @Scheduled(cron = "* 22 0,1 * * ?")
     public void taskQueryMysql() {
         deleteByPrex("user:");
@@ -111,6 +112,14 @@ public class ScheduledTask {
         List<JdFruit> jdFruitList = jdFruitService.queryAll(dFruit);
         List<JdPet> jdPetList = jdPetService.queryAll(dPet);
         List<JdPlantbean> jdPlantbeanList = jdPlantbeanService.queryAll(dPlantbean);
+        //保存一份历史记录
+        //"fruit".equals(type) || "plantbean".equals(type) || "pet".equals(type)
+
+      /*  redisTemplate.opsForZSet().add("hisfruit:",   (Serializable) jdFruitList,1);
+        redisTemplate.opsForZSet().add("hisplantbean:", (Serializable)jdPlantbeanList,1);
+        redisTemplate.opsForZSet().add("hispet:",(Serializable)jdPetList,1);
+*/
+
         int i = 0;
         Set<JdFruit> jdFruitSet = new HashSet<>();
         for (JdFruit jf : jdFruitList) {
