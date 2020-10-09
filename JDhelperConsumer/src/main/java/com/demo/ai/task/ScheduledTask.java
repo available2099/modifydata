@@ -69,14 +69,14 @@ public class ScheduledTask {
         jdPlantbeanService.updateAll(dPlantbean);
         //初始化库存数量
         redisTemplate.opsForValue().set("numfruit", 5);
-        redisTemplate.opsForValue().set("numplantbean", 9);
+        redisTemplate.opsForValue().set("numplantbean",9);
         redisTemplate.opsForValue().set("numpet", 0);
 
     }
 
     //  @Scheduled(cron = "* 47 18 * * ?")
     //  @Scheduled(cron = "* 27 19 * * ?")
-    //  @Scheduled(cron = "* 27 23 * * ?")
+  //    @Scheduled(cron = "* 09 15 * * ?")
     @Scheduled(cron = "* 22 0,1 * * ?")
     public void taskQueryMysql() {
         deleteByPrex("user:");

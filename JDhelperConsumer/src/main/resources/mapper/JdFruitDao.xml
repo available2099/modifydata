@@ -76,7 +76,7 @@
             <if test="updateTime != null">
                 and update_time &lt;= #{updateTime}
             </if>
-
+            ORDER BY rand()
         </where>
     </select>
 

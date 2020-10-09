@@ -8,6 +8,7 @@ import com.demo.ai.service.JdFruitService;
 import com.demo.ai.service.JdPetService;
 import com.demo.ai.service.JdPlantbeanService;
 import com.demo.ai.util.RedisConfigTest;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.ArrayUtils;
@@ -19,6 +20,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -47,6 +50,7 @@ public class JdHelperController {
         return obj.getTypeFactory().constructParametricType(collectionClass, elementClasses);
     }
 
+
     @RequestMapping(value = "/initSku", method = RequestMethod.GET)
     public String initSku() {
         //初始化库存数量
@@ -57,32 +61,81 @@ public class JdHelperController {
         return "初始化库存成功";
     }
 
+    public String secondkill(String type, String subscriptionurl) throws JsonProcessingException {
+        ObjectMapper obj = new ObjectMapper();
+        String[] md5arry = new String[]{"760517d4be0b4082a5c6cf5529e4599e", "fnfkmp5hx2byrqss7h5jr5j2wtnlfimruj4z7ii"};
+        String md5 = "";
+        if (!ArrayUtils.contains(md5arry, subscriptionurl)) {
+            redisTemplate.setEnableTransactionSupport(true);//开启事务的支持
+            redisTemplate.watch("num" + type);//watch某个key,当该key被其它客户端改变时,则会中断当前的操作
+
+            String numTemp = obj.writeValueAsString(redisTemplate.opsForValue().get("num" + type));
+
+            long num = Long.valueOf(numTemp);//获取当前商品的数量
+            if (num <= 0) {//检查当前商品的数量
+                System.out.println("----" + type + "----秒杀已结束");
+            } else {
+                redisTemplate.multi();//事务
+                redisTemplate.boundValueOps("num" + type).decrement(1);//下单成功 商品数量减1
+                List<Object> exec = redisTemplate.exec();//执行事务
+                if (exec == null || exec.size() == 0) {
+                    System.out.println("----" + type + "----秒杀失败");
+                } else {
+                    System.out.println("----" + type + "----秒杀成功");
+                    switch (type) {
+                        case "fruit":
+                            md5 = "760517d4be0b4082a5c6cf5529e4599e";
+                            break;
+                        case "pet":
+                            md5 = "";
+                            break;
+                        case "plantbean":
+                            md5 = "fnfkmp5hx2byrqss7h5jr5j2wtnlfimruj4z7ii";
+                            break;
+                    }
+                }
+            }
+
+        }
+        return md5;
+    }
+
+
     @RequestMapping(value = "/{type}/{subscriptionurl}", method = {RequestMethod.GET})
     public String queryData(@PathVariable String type, @PathVariable String subscriptionurl, HttpServletRequest request, @RequestParam("ti") String time) throws Exception {
+        redisTemplate.boundValueOps("totalnew").increment(1);//计算请求量
         ObjectMapper obj = new ObjectMapper();
         String userAgent = request.getHeader("user-agent");
-        System.out.println("客户端请求类型："+userAgent);
+        System.out.println("客户端请求类型：" + userAgent);
         //计算时间差
         Long useTime = System.currentTimeMillis() - Long.parseLong(time);
         System.out.println("接口请求时间：" + useTime);
         System.out.println("time is :" + time);
         String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new java.util.Date(Long.parseLong(time)));
+        System.out.println("请求时间" + date);
+        String datetime = new SimpleDateFormat("HH:mm:ss").format(new java.util.Date(Long.parseLong(time)));
+        String  timere = "06:00:00";
+        if("fruit".equals(type)){
+            timere = "07:00:00";
+        }
+        LocalTime timerequest = LocalTime.parse(datetime, DateTimeFormatter.ofPattern("HH:mm:ss"));
+        LocalTime timeOrder = LocalTime.parse(timere, DateTimeFormatter.ofPattern("HH:mm:ss"));
+
         // 将时间戳转为当前时间
         // LocalDateTime localDateTime = LocalDateTime.ofEpochSecond(Long.parseLong(time), 0, ZoneOffset.ofHours(8));
         // 2020-02-03T13:30:44
-        System.out.println("请求时间" + date);
 
 
         //判断长度
-        if (userAgent.contains("Quantumult") && subscriptionurl.length() > 20) {
+        if (timeOrder.isBefore(timerequest) && userAgent.contains("Quantumult") && subscriptionurl.length() > 20) {
             String ip = getIpAddress(request);
             System.out.println("ip是多少：" + ip);
             //查询一下redis是否有数据，有的话返回空
             if (redisTemplate.opsForValue().get("time:" + subscriptionurl) == null) {
 
-                String[] md5arry = new String[]{"760517d4be0b4082a5c6cf5529e4599e","fnfkmp5hx2byrqss7h5jr5j2wtnlfimruj4z7ii"};
+                //     String[] md5arry = new String[]{"760517d4be0b4082a5c6cf5529e4599e","fnfkmp5hx2byrqss7h5jr5j2wtnlfimruj4z7ii"};
                 String md5 = "";
-                if(!ArrayUtils.contains(md5arry, subscriptionurl)){
+  /*              if(!ArrayUtils.contains(md5arry, subscriptionurl)){
                     redisTemplate.setEnableTransactionSupport(true);//开启事务的支持
                     redisTemplate.watch("num" + type);//watch某个key,当该key被其它客户端改变时,则会中断当前的操作
 
@@ -110,10 +163,10 @@ public class JdHelperController {
                         }
                     }
 
-                }
+                }*/
 
 
-              redisTemplate.opsForValue().set("time:" + subscriptionurl, ip, 59, TimeUnit.MINUTES);
+                redisTemplate.opsForValue().set("time:" + subscriptionurl, ip, 25, TimeUnit.MINUTES);
 
                 if ("fruit".equals(type) || "plantbean".equals(type) || "pet".equals(type)) {
                     Map<String, Object> properties = new HashMap<>();
@@ -138,6 +191,9 @@ public class JdHelperController {
                             JavaType javaType = getCollectionType(obj, Set.class, JdFruit.class);
 
                             Set<JdFruit> fruitSet = obj.readValue(json, javaType);
+                            if (!json.contains("760517d4be0b4082a5c6cf5529e4599e")) {
+                                md5 = secondkill(type, subscriptionurl);
+                            }
                             for (JdFruit fr : fruitSet) {
                                 if ("".equals(md5)) {
                                     md5 = fr.getUserMd5();
@@ -166,6 +222,9 @@ public class JdHelperController {
                             JavaType javaTypeJdPlantbean = getCollectionType(obj, Set.class, JdPlantbean.class);
 
                             Set<JdPlantbean> PlantbeanSet = obj.readValue(jsonJdPlantbean, javaTypeJdPlantbean);
+                            if (!jsonJdPlantbean.contains("fnfkmp5hx2byrqss7h5jr5j2wtnlfimruj4z7ii")) {
+                                md5 = secondkill(type, subscriptionurl);
+                            }
                             for (JdPlantbean fr : PlantbeanSet) {
                                 if ("".equals(md5)) {
                                     md5 = fr.getUserMd5();
@@ -197,7 +256,9 @@ public class JdHelperController {
     @RequestMapping(value = "/jscool/{type}/{subscriptionurl}", method = {RequestMethod.GET})
     public String selectOne(@PathVariable String type, @PathVariable String subscriptionurl, HttpServletRequest request) throws Exception {
         String userAgent = request.getHeader("user-agent");
-        System.out.println("客户端请求类型："+userAgent);
+        System.out.println("客户端请求类型：" + userAgent);
+        redisTemplate.boundValueOps("totalold").increment(1);
+
         //判断长度
         ObjectMapper obj = new ObjectMapper();
         if (userAgent.contains("Quantumult") && subscriptionurl.length() > 20) {
@@ -205,9 +266,9 @@ public class JdHelperController {
             System.out.println("ip是多少：" + ip);
             //查询一下redis是否有数据，有的话返回空
             if (redisTemplate.opsForValue().get("time:" + subscriptionurl) == null) {
-                String[] md5arry = new String[]{"760517d4be0b4082a5c6cf5529e4599e", "fnfkmp5hx2byrqss7h5jr5j2wtnlfimruj4z7ii"};
+                //     String[] md5arry = new String[]{"760517d4be0b4082a5c6cf5529e4599e", "fnfkmp5hx2byrqss7h5jr5j2wtnlfimruj4z7ii"};
                 String md5 = "";
-                if (!ArrayUtils.contains(md5arry, subscriptionurl)) {
+                /*if (!ArrayUtils.contains(md5arry, subscriptionurl)) {
                     redisTemplate.setEnableTransactionSupport(true);//开启事务的支持
                     redisTemplate.watch("num" + type);//watch某个key,当该key被其它客户端改变时,则会中断当前的操作
 
@@ -238,10 +299,10 @@ public class JdHelperController {
                         }
                     }
 
-                }
+                }*/
 
 
-                redisTemplate.opsForValue().set("time:" + subscriptionurl, ip, 59, TimeUnit.MINUTES);
+                redisTemplate.opsForValue().set("time:" + subscriptionurl, ip, 25, TimeUnit.MINUTES);
 
                 if ("fruit".equals(type) || "plantbean".equals(type) || "pet".equals(type)) {
                     Map<String, Object> properties = new HashMap<>();
@@ -266,6 +327,9 @@ public class JdHelperController {
                             JavaType javaType = getCollectionType(obj, Set.class, JdFruit.class);
 
                             Set<JdFruit> fruitSet = obj.readValue(json, javaType);
+                            if (!json.contains("760517d4be0b4082a5c6cf5529e4599e")) {
+                                md5 = secondkill(type, subscriptionurl);
+                            }
                             for (JdFruit fr : fruitSet) {
                                 if ("".equals(md5)) {
                                     md5 = fr.getUserMd5();
@@ -294,6 +358,9 @@ public class JdHelperController {
                             JavaType javaTypeJdPlantbean = getCollectionType(obj, Set.class, JdPlantbean.class);
 
                             Set<JdPlantbean> PlantbeanSet = obj.readValue(jsonJdPlantbean, javaTypeJdPlantbean);
+                            if (!jsonJdPlantbean.contains("fnfkmp5hx2byrqss7h5jr5j2wtnlfimruj4z7ii")) {
+                                md5 = secondkill(type, subscriptionurl);
+                            }
                             for (JdPlantbean fr : PlantbeanSet) {
                                 if ("".equals(md5)) {
                                     md5 = fr.getUserMd5();
@@ -307,8 +374,6 @@ public class JdHelperController {
 
                     e.printStackTrace();
                 }
-
-
                 //RedisConfigTest.testObj();
  /*       RedisConfigTest.HashOperations();
         RedisConfigTest.ListOperations();
