@@ -114,8 +114,8 @@ public class JdHelperController {
         String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new java.util.Date(Long.parseLong(time)));
         System.out.println("请求时间" + date);
         String datetime = new SimpleDateFormat("HH:mm:ss").format(new java.util.Date(Long.parseLong(time)));
-        String  timere = "06:00:00";
-        if("fruit".equals(type)){
+        String timere = "06:00:00";
+        if ("fruit".equals(type)) {
             timere = "07:00:00";
         }
         LocalTime timerequest = LocalTime.parse(datetime, DateTimeFormatter.ofPattern("HH:mm:ss"));
@@ -252,6 +252,23 @@ public class JdHelperController {
         return "";
     }
 
+    @RequestMapping(value = "/mobile/{subscriptionurl}", method = {RequestMethod.GET})
+    public String selectMobile(@PathVariable String subscriptionurl, HttpServletRequest request) throws Exception {
+        Map<String, Object> properties = new HashMap<>();
+        properties.put("md5", subscriptionurl);
+        properties.put("send_time", simpleDateFormat.format(new Date()));
+        userScheduler.execute(() -> {
+                    try {
+                        rabbitSender.send("mobile", properties);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+        );
+
+
+        return null;
+    }
 
     @RequestMapping(value = "/jscool/{type}/{subscriptionurl}", method = {RequestMethod.GET})
     public String selectOne(@PathVariable String type, @PathVariable String subscriptionurl, HttpServletRequest request) throws Exception {

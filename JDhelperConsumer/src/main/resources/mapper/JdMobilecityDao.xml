@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.demo.ai.dao.JdMobilecityDao">
+
+    <resultMap type="com.demo.ai.entity.JdMobilecity" id="JdMobilecityMap">
+        <result property="id" column="id" jdbcType="OTHER"/>
+        <result property="userMd5" column="user_md5" jdbcType="VARCHAR"/>
+        <result property="uniqueId" column="unique_id" jdbcType="VARCHAR"/>
+        <result property="name" column="name" jdbcType="VARCHAR"/>
+        <result property="ip" column="ip" jdbcType="VARCHAR"/>
+        <result property="count" column="count" jdbcType="INTEGER"/>
+        <result property="todaycount" column="todaycount" jdbcType="INTEGER"/>
+        <result property="todayEffectcount" column="today_effectcount" jdbcType="INTEGER"/>
+        <result property="userStatus" column="user_status" jdbcType="VARCHAR"/>
+        <result property="userTodaystatus" column="user_todaystatus" jdbcType="VARCHAR"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="JdMobilecityMap">
+        select
+          id, user_md5, unique_id, name, ip, count, todaycount, today_effectcount, user_status, user_todaystatus, update_time, create_time
+        from lihao.jd_mobilecity
+        where id = #{id}
+    </select>
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="JdMobilecityMap">
+        select
+        id, user_md5, unique_id, name, ip, count, todaycount, today_effectcount, user_status, user_todaystatus,
+        create_time, update_time
+        from lihao.jd_mobilecity
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="userMd5 != null and userMd5 != ''">
+                and user_md5 = #{userMd5}
+            </if>
+            <if test="uniqueId != null and uniqueId != ''">
+                and unique_id = #{uniqueId}
+            </if>
+            <if test="name != null and name != ''">
+                and name = #{name}
+            </if>
+            <if test="ip != null and ip != ''">
+                and ip = #{ip}
+            </if>
+            <if test="count != null">
+                and count = #{count}
+            </if>
+            <if test="todaycount != null">
+                and todaycount = #{todaycount}
+            </if>
+            <if test="todayEffectcount != null">
+                and today_effectcount = #{todayEffectcount}
+            </if>
+            <if test="userStatus != null and userStatus != ''">
+                and user_status = #{userStatus}
+            </if>
+            <if test="userTodaystatus != null and userTodaystatus != ''">
+                and user_todaystatus = #{userTodaystatus}
+            </if>
+            <if test="createTime != null">
+                and update_time &gt;= #{createTime}
+            </if>
+            <if test="updateTime != null">
+                and update_time &lt;= #{updateTime}
+            </if>
+            ORDER BY rand()
+        </where>
+    </select>
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="JdMobilecityMap">
+        select
+          id, user_md5, unique_id, name, ip, count, todaycount, today_effectcount, user_status, user_todaystatus, update_time, create_time
+        from lihao.jd_mobilecity
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="JdMobilecityMap">
+        select
+        id, user_md5, unique_id, name, ip, count, todaycount, today_effectcount, user_status, user_todaystatus,
+        update_time, create_time
+        from lihao.jd_mobilecity
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="userMd5 != null and userMd5 != ''">
+                and user_md5 = #{userMd5}
+            </if>
+            <if test="uniqueId != null and uniqueId != ''">
+                and unique_id = #{uniqueId}
+            </if>
+            <if test="name != null and name != ''">
+                and name = #{name}
+            </if>
+            <if test="ip != null and ip != ''">
+                and ip = #{ip}
+            </if>
+            <if test="count != null">
+                and count = #{count}
+            </if>
+            <if test="todaycount != null">
+                and todaycount = #{todaycount}
+            </if>
+            <if test="todayEffectcount != null">
+                and today_effectcount = #{todayEffectcount}
+            </if>
+            <if test="userStatus != null and userStatus != ''">
+                and user_status = #{userStatus}
+            </if>
+            <if test="userTodaystatus != null and userTodaystatus != ''">
+                and user_todaystatus = #{userTodaystatus}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into lihao.jd_mobilecity(user_md5, unique_id, name, ip, count, todaycount, today_effectcount, user_status, user_todaystatus, update_time, create_time)
+        values (#{userMd5}, #{uniqueId}, #{name}, #{ip}, #{count}, #{todaycount}, #{todayEffectcount}, #{userStatus}, #{userTodaystatus}, #{updateTime}, #{createTime})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into lihao.jd_mobilecity(user_md5, unique_id, name, ip, count, todaycount, today_effectcount,
+        user_status, user_todaystatus, update_time, create_time)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.userMd5}, #{entity.uniqueId}, #{entity.name}, #{entity.ip}, #{entity.count}, #{entity.todaycount},
+            #{entity.todayEffectcount}, #{entity.userStatus}, #{entity.userTodaystatus}, #{entity.updateTime},
+            #{entity.createTime})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into lihao.jd_mobilecity(user_md5, unique_id, name, ip, count, todaycount, today_effectcount,
+        user_status, user_todaystatus, update_time, create_time)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.userMd5}, #{entity.uniqueId}, #{entity.name}, #{entity.ip}, #{entity.count}, #{entity.todaycount},
+            #{entity.todayEffectcount}, #{entity.userStatus}, #{entity.userTodaystatus}, #{entity.updateTime},
+            #{entity.createTime})
+        </foreach>
+        on duplicate key update
+        user_md5 = values(user_md5) , unique_id = values(unique_id) , name = values(name) , ip = values(ip) , count =
+        values(count) , todaycount = values(todaycount) , today_effectcount = values(today_effectcount) , user_status =
+        values(user_status) , user_todaystatus = values(user_todaystatus) , update_time = values(update_time) ,
+        create_time = values(create_time)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update lihao.jd_mobilecity
+        <set>
+            <if test="userMd5 != null and userMd5 != ''">
+                user_md5 = #{userMd5},
+            </if>
+            <if test="uniqueId != null and uniqueId != ''">
+                unique_id = #{uniqueId},
+            </if>
+            <if test="name != null and name != ''">
+                name = #{name},
+            </if>
+            <if test="ip != null and ip != ''">
+                ip = #{ip},
+            </if>
+            <if test="count != null">
+                count = #{count},
+            </if>
+            <if test="todaycount != null">
+                todaycount = #{todaycount},
+            </if>
+            <if test="todayEffectcount != null">
+                today_effectcount = #{todayEffectcount},
+            </if>
+            <if test="userStatus != null and userStatus != ''">
+                user_status = #{userStatus},
+            </if>
+            <if test="userTodaystatus != null and userTodaystatus != ''">
+                user_todaystatus = #{userTodaystatus},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from lihao.jd_mobilecity where id = #{id}
+    </delete>
+
+</mapper>
