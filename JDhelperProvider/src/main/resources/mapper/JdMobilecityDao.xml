@@ -94,7 +94,7 @@
             insert into lihao.jd_mobilecity(user_md5, unique_id, name, ip, count, todaycount, today_effectcount, user_status, user_todaystatus, create_time, update_time)
             values (#{userMd5}, #{uniqueId}, #{name}, #{ip}, #{count}, #{todaycount}, #{todayEffectcount}, #{userStatus}, #{userTodaystatus}, #{createTime}, #{updateTime})
         </if>
-    </insert>
+            </insert>
 
     <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
         insert into lihao.jd_mobilecity(user_md5, unique_id, name, ip, count, todaycount, today_effectcount,
@@ -168,5 +168,8 @@
     <delete id="deleteById">
         delete from lihao.jd_mobilecity where id = #{id}
     </delete>
-
+    <!--通过主键删除-->
+    <delete id="deleteAll">
+        delete from lihao.jd_mobilecity
+    </delete>
 </mapper>

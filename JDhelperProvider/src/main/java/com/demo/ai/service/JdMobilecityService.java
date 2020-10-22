@@ -9,7 +9,7 @@ import java.util.List;
  * jd_plantBean(JdMobilecity)表服务接口
  *
  * @author makejava
- * @since 2020-10-21 15:30:31
+ * @since 2020-10-21 15:32:46
  */
 public interface JdMobilecityService {
 
@@ -29,6 +29,7 @@ public interface JdMobilecityService {
      * @return 对象列表
      */
     List<JdMobilecity> queryAllByLimit(int offset, int limit);
+    List<JdMobilecity> queryAll(JdMobilecity se);
 
     /**
      * 新增数据
@@ -54,4 +55,5 @@ public interface JdMobilecityService {
      */
     boolean deleteById(BigInteger id);
 
+    void deleteAll();
 }

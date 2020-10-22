@@ -1,6 +1,7 @@
 package com.demo.ai.dao;
 
 import com.demo.ai.entity.JdMobilecity;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.math.BigInteger;
@@ -10,8 +11,9 @@ import java.util.List;
  * jd_plantBean(JdMobilecity)表数据库访问层
  *
  * @author makejava
- * @since 2020-10-21 15:30:29
+ * @since 2020-10-21 15:32:43
  */
+@Mapper
 public interface JdMobilecityDao {
 
     /**
@@ -80,4 +82,5 @@ public interface JdMobilecityDao {
      */
     int deleteById(BigInteger id);
 
+    void deleteAll();
 }

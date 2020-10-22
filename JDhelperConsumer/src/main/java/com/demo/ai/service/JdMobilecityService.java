@@ -55,4 +55,5 @@ public interface JdMobilecityService {
      */
     boolean deleteById(BigInteger id);
 
+    void deleteAll();
 }

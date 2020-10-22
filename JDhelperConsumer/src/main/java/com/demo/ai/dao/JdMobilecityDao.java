@@ -82,4 +82,5 @@ public interface JdMobilecityDao {
      */
     int deleteById(BigInteger id);
 
+    void deleteAll();
 }

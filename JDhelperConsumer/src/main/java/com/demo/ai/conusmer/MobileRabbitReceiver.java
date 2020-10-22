@@ -18,7 +18,7 @@ import java.util.Map;
 @Component
 public class MobileRabbitReceiver {
     @Autowired
-    private JdMobilecityService jdFruitService;
+    private JdMobilecityService jdMobilecity;
 
     @RabbitListener(bindings = @QueueBinding(
             value = @Queue(value = "mobile",
@@ -45,7 +45,7 @@ public class MobileRabbitReceiver {
         jdFruit.setUpdateTime(new Date());
         jdFruit.setCreateTime(new Date());
 
-        jdFruitService.insert(jdFruit);
+        jdMobilecity.insert(jdFruit);
         //手工ACK
         channel.basicAck(deliveryTag, false);
     }

@@ -22,7 +22,7 @@ import java.util.Set;
 @Component
 public class MobileTask {
     @Autowired
-    private JdMobilecityService jdFruitService;
+    private JdMobilecityService jdMobilecity;
     @Autowired
     private JdPetService jdPetService;
     @Autowired
@@ -55,7 +55,8 @@ public class MobileTask {
     // @Scheduled(cron = "* 22 23 * * ?")
     @Scheduled(cron = "* 22 22 * * ?")
     public void updataUserTodaystatus() {
-        deleteByPrex("mobile:");
+        jdMobilecity.deleteAll();
+       // deleteByPrex("mobile:");
 
     }
 
@@ -65,6 +66,7 @@ public class MobileTask {
 
     @Scheduled(cron = "* 15 */1 * * ?")
     public void taskQueryMysql() {
+        deleteByPrex("mobile:");
         System.out.println("shanchu");
         //4次需要弄5个人
         JdMobilecity dFruit = new JdMobilecity();
@@ -76,7 +78,7 @@ public class MobileTask {
         dFruit.setTodaycount(null);
         dFruit.setCount(null);
        
-        List<JdMobilecity> jdFruitList = jdFruitService.queryAll(dFruit);
+        List<JdMobilecity> jdFruitList = jdMobilecity.queryAll(dFruit);
 
         //保存一份历史记录
         //"fruit".equals(type) || "plantbean".equals(type) || "pet".equals(type)
@@ -89,7 +91,7 @@ public class MobileTask {
         int i = 0;
         Set<JdMobilecity> jdFruitSet = new HashSet<>();
         for (JdMobilecity jf : jdFruitList) {
-            if (i < 5) {
+            if (i < 11) {
                 jdFruitSet.add(jf);
 
             } else {

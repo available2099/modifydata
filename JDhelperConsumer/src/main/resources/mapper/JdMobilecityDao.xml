@@ -24,52 +24,7 @@
         from lihao.jd_mobilecity
         where id = #{id}
     </select>
-    <!--通过实体作为筛选条件查询-->
-    <select id="queryAll" resultMap="JdMobilecityMap">
-        select
-        id, user_md5, unique_id, name, ip, count, todaycount, today_effectcount, user_status, user_todaystatus,
-        create_time, update_time
-        from lihao.jd_mobilecity
-        <where>
-            <if test="id != null">
-                and id = #{id}
-            </if>
-            <if test="userMd5 != null and userMd5 != ''">
-                and user_md5 = #{userMd5}
-            </if>
-            <if test="uniqueId != null and uniqueId != ''">
-                and unique_id = #{uniqueId}
-            </if>
-            <if test="name != null and name != ''">
-                and name = #{name}
-            </if>
-            <if test="ip != null and ip != ''">
-                and ip = #{ip}
-            </if>
-            <if test="count != null">
-                and count = #{count}
-            </if>
-            <if test="todaycount != null">
-                and todaycount = #{todaycount}
-            </if>
-            <if test="todayEffectcount != null">
-                and today_effectcount = #{todayEffectcount}
-            </if>
-            <if test="userStatus != null and userStatus != ''">
-                and user_status = #{userStatus}
-            </if>
-            <if test="userTodaystatus != null and userTodaystatus != ''">
-                and user_todaystatus = #{userTodaystatus}
-            </if>
-            <if test="createTime != null">
-                and update_time &gt;= #{createTime}
-            </if>
-            <if test="updateTime != null">
-                and update_time &lt;= #{updateTime}
-            </if>
-            ORDER BY rand()
-        </where>
-    </select>
+
     <!--查询指定行数据-->
     <select id="queryAllByLimit" resultMap="JdMobilecityMap">
         select
@@ -126,9 +81,20 @@
 
     <!--新增所有列-->
     <insert id="insert" keyProperty="id" useGeneratedKeys="true">
-        insert into lihao.jd_mobilecity(user_md5, unique_id, name, ip, count, todaycount, today_effectcount, user_status, user_todaystatus, update_time, create_time)
-        values (#{userMd5}, #{uniqueId}, #{name}, #{ip}, #{count}, #{todaycount}, #{todayEffectcount}, #{userStatus}, #{userTodaystatus}, #{updateTime}, #{createTime})
-    </insert>
+        <selectKey keyProperty="count" resultType="int" order="BEFORE">
+            select count(*) from lihao.jd_mobilecity where user_md5 = #{userMd5}
+        </selectKey>
+        <if test="count > 0">
+            update lihao.jd_mobilecity set todaycount =todaycount+1
+            <where>
+                user_md5 = #{userMd5}
+            </where>
+        </if>
+        <if test="count==0">
+            insert into lihao.jd_mobilecity(user_md5, unique_id, name, ip, count, todaycount, today_effectcount, user_status, user_todaystatus, create_time, update_time)
+            values (#{userMd5}, #{uniqueId}, #{name}, #{ip}, #{count}, #{todaycount}, #{todayEffectcount}, #{userStatus}, #{userTodaystatus}, #{createTime}, #{updateTime})
+        </if>
+            </insert>
 
     <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
         insert into lihao.jd_mobilecity(user_md5, unique_id, name, ip, count, todaycount, today_effectcount,
@@ -202,5 +168,8 @@
     <delete id="deleteById">
         delete from lihao.jd_mobilecity where id = #{id}
     </delete>
-
+    <!--通过主键删除-->
+    <delete id="deleteAll">
+        delete from lihao.jd_mobilecity
+    </delete>
 </mapper>

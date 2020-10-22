@@ -82,4 +82,9 @@ public class JdMobilecityServiceImpl implements JdMobilecityService {
     public boolean deleteById(BigInteger id) {
         return this.jdMobilecityDao.deleteById(id) > 0;
     }
+
+    @Override
+    public void deleteAll() {
+        this.jdMobilecityDao.deleteAll();
+    }
 }

@@ -13,7 +13,7 @@ import java.util.List;
  * jd_plantBean(JdMobilecity)表服务实现类
  *
  * @author makejava
- * @since 2020-10-21 15:30:34
+ * @since 2020-10-21 15:32:48
  */
 @Service("jdMobilecityService")
 public class JdMobilecityServiceImpl implements JdMobilecityService {
@@ -29,6 +29,11 @@ public class JdMobilecityServiceImpl implements JdMobilecityService {
     @Override
     public JdMobilecity queryById(BigInteger id) {
         return this.jdMobilecityDao.queryById(id);
+    }
+
+    @Override
+    public List<JdMobilecity> queryAll(JdMobilecity se) {
+        return this.jdMobilecityDao.queryAll(se);
     }
 
     /**
@@ -76,5 +81,10 @@ public class JdMobilecityServiceImpl implements JdMobilecityService {
     @Override
     public boolean deleteById(BigInteger id) {
         return this.jdMobilecityDao.deleteById(id) > 0;
+    }
+
+    @Override
+    public void deleteAll() {
+        this.jdMobilecityDao.deleteAll();
     }
 }

@@ -1,16 +1,19 @@
 package com.demo.ai.controller;
 
 import com.demo.ai.entity.JdFruit;
+import com.demo.ai.entity.JdMobilecity;
 import com.demo.ai.entity.JdPet;
 import com.demo.ai.entity.JdPlantbean;
 import com.demo.ai.producer.RabbitSender;
 import com.demo.ai.service.JdFruitService;
+import com.demo.ai.service.JdMobilecityService;
 import com.demo.ai.service.JdPetService;
 import com.demo.ai.service.JdPlantbeanService;
 import com.demo.ai.util.RedisConfigTest;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -43,11 +46,18 @@ public class JdHelperController {
     @Qualifier("user.scheduler")
     private ExecutorService userScheduler;
     @Autowired
+    private JdMobilecityService jdMobilecity;
+    @Autowired
     private RedisTemplate<String, Serializable> redisTemplate;
     private static SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
     public static JavaType getCollectionType(ObjectMapper obj, Class<?> collectionClass, Class<?>... elementClasses) {
         return obj.getTypeFactory().constructParametricType(collectionClass, elementClasses);
+    }
+    @RequestMapping(value = "/initmobile", method = RequestMethod.GET)
+    public String initmobile() {
+        createData();
+        return "初始化成功";
     }
 
 
@@ -125,9 +135,9 @@ public class JdHelperController {
         // LocalDateTime localDateTime = LocalDateTime.ofEpochSecond(Long.parseLong(time), 0, ZoneOffset.ofHours(8));
         // 2020-02-03T13:30:44
 
-
+//        if (userAgent.contains("Quantumult") && subscriptionurl.length() > 20) {
         //判断长度
-        if (timeOrder.isBefore(timerequest) && userAgent.contains("Quantumult") && subscriptionurl.length() > 20) {
+        if (timeOrder.isBefore(timerequest)  && subscriptionurl.length() > 20) {
             String ip = getIpAddress(request);
             System.out.println("ip是多少：" + ip);
             //查询一下redis是否有数据，有的话返回空
@@ -265,9 +275,24 @@ public class JdHelperController {
                     }
                 }
         );
+        String md5 = "";
+        ObjectMapper obj = new ObjectMapper();
 
+        Set<Serializable> fruitSetSerializable = redisTemplate.boundSetOps("mobile:" + subscriptionurl).members();
+        String json = obj.writeValueAsString(fruitSetSerializable);
+        JavaType javaType = getCollectionType(obj, Set.class, JdFruit.class);
 
-        return null;
+        Set<JdFruit> fruitSet = obj.readValue(json, javaType);
+
+        for (JdFruit fr : fruitSet) {
+            if ("".equals(md5)) {
+                md5 = fr.getUserMd5();
+            } else {
+                md5 = md5 + "@" + fr.getUserMd5();
+            }
+        }
+
+        return md5;
     }
 
     @RequestMapping(value = "/jscool/{type}/{subscriptionurl}", method = {RequestMethod.GET})
@@ -278,8 +303,10 @@ public class JdHelperController {
 
         //判断长度
         ObjectMapper obj = new ObjectMapper();
-        if (userAgent.contains("Quantumult") && subscriptionurl.length() > 20) {
-            String ip = getIpAddress(request);
+      //  if (userAgent.contains("Quantumult") && subscriptionurl.length() > 20) {
+            if ( subscriptionurl.length() > 20) {
+
+                String ip = getIpAddress(request);
             System.out.println("ip是多少：" + ip);
             //查询一下redis是否有数据，有的话返回空
             if (redisTemplate.opsForValue().get("time:" + subscriptionurl) == null) {
@@ -428,4 +455,74 @@ public class JdHelperController {
         return ip;
     }
 
+    public  void  createData(){
+        //4次需要弄5个人
+        JdMobilecity dFruit = new JdMobilecity();
+        dFruit.setUserStatus("1");
+        //   dFruit.setCreateTime(localDate2Date(LocalDate.now().plusDays(-1)));
+        //  dFruit.setUpdateTime(localDate2Date(LocalDate.now()));
+        dFruit.setUserTodaystatus("1");
+        dFruit.setTodayEffectcount(null);
+        dFruit.setTodaycount(null);
+        dFruit.setCount(null);
+
+        List<JdMobilecity> jdFruitList = jdMobilecity.queryAll(dFruit);
+
+        //保存一份历史记录
+        //"fruit".equals(type) || "plantbean".equals(type) || "pet".equals(type)
+
+      /*  redisTemplate.opsForZSet().add("hisfruit:",   (Serializable) jdFruitList,1);
+        redisTemplate.opsForZSet().add("hisplantbean:", (Serializable)jdPlantbeanList,1);
+        redisTemplate.opsForZSet().add("hispet:",(Serializable)jdPetList,1);
+*/
+
+        int i = 0;
+        Set<JdMobilecity> jdFruitSet = new HashSet<>();
+        for (JdMobilecity jf : jdFruitList) {
+            if (i < 10) {
+                jdFruitSet.add(jf);
+
+            } else {
+                //todo
+                for (JdMobilecity kjfset : jdFruitSet) {
+                    for (JdMobilecity jfset : jdFruitSet) {
+                        if (!kjfset.getUserMd5().equals(jfset.getUserMd5())) {
+                            redisTemplate.opsForSet().add("mobile:" + kjfset.getUserMd5(), jfset);
+                        }
+                    }
+                }
+                jdFruitSet.clear();
+                i = 0;
+                jdFruitSet.add(jf);
+            }
+            i++;
+        }
+        for (JdMobilecity kjfset : jdFruitSet) {
+            for (JdMobilecity jfset : jdFruitSet) {
+                if (!kjfset.getUserMd5().equals(jfset.getUserMd5())) {
+                    redisTemplate.opsForSet().add("mobile:" + kjfset.getUserMd5(), jfset);
+                }
+            }
+        }
+
+        //查出全部符合数据
+        //分组
+        //分别插入redis
+        //没更新掉的继续更新redis,可以使用set对象作为存储就不会重复了
+        System.out.println("更新状态！");
+    }
+    /**
+     * 根据前缀删除key
+     *
+     * @param prex
+     */
+    public void deleteByPrex(String prex) {
+        //org.apache.commons.collections.CollectionUtils
+
+        prex = prex + "*";
+        Set<String> keys = redisTemplate.keys(prex);
+        if (CollectionUtils.isNotEmpty(keys)) {
+            redisTemplate.delete(keys);
+        }
+    }
 }
