@@ -294,7 +294,38 @@ public class JdHelperController {
 
         return md5;
     }
+    @RequestMapping(value = "/selfmobile/{subscriptionurl}", method = {RequestMethod.GET})
+    public String selfmobile(@PathVariable String subscriptionurl, HttpServletRequest request) throws Exception {
+        Map<String, Object> properties = new HashMap<>();
+        properties.put("md5", subscriptionurl);
+        properties.put("send_time", simpleDateFormat.format(new Date()));
+        userScheduler.execute(() -> {
+                    try {
+                        rabbitSender.send("mobile", properties);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+        );
+        String md5 = "";
+        ObjectMapper obj = new ObjectMapper();
 
+        Set<Serializable> fruitSetSerializable = redisTemplate.boundSetOps("mobile:" + subscriptionurl).members();
+        String json = obj.writeValueAsString(fruitSetSerializable);
+        JavaType javaType = getCollectionType(obj, Set.class, JdFruit.class);
+
+        Set<JdFruit> fruitSet = obj.readValue(json, javaType);
+
+        for (JdFruit fr : fruitSet) {
+            if ("".equals(md5)) {
+                md5 = fr.getUserMd5();
+            } else {
+                md5 = md5 + "@" + fr.getUserMd5();
+            }
+        }
+
+        return md5;
+    }
     @RequestMapping(value = "/jscool/{type}/{subscriptionurl}", method = {RequestMethod.GET})
     public String selectOne(@PathVariable String type, @PathVariable String subscriptionurl, HttpServletRequest request) throws Exception {
         String userAgent = request.getHeader("user-agent");

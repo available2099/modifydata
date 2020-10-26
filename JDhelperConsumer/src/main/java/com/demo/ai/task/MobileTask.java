@@ -53,7 +53,7 @@ public class MobileTask {
         System.out.println("延迟1000毫秒后执行，之后每2000毫秒执行一次！");
     }*/
     // @Scheduled(cron = "* 22 23 * * ?")
-    @Scheduled(cron = "* 22 22 * * ?")
+    @Scheduled(cron = "* 50 23 * * ?")
     public void updataUserTodaystatus() {
         jdMobilecity.deleteAll();
        // deleteByPrex("mobile:");
@@ -64,7 +64,7 @@ public class MobileTask {
     //  @Scheduled(cron = "* 27 19 * * ?")
     //  @Scheduled(cron = "* 10 16 * * ?")
 
-    @Scheduled(cron = "* 15 */1 * * ?")
+    @Scheduled(cron = "* 15 8,9,10,13,15,18,20,21,22 * * ?")
     public void taskQueryMysql() {
         deleteByPrex("mobile:");
         System.out.println("shanchu");
