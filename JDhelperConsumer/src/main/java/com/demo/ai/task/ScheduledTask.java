@@ -55,7 +55,7 @@ public class ScheduledTask {
         System.out.println("延迟1000毫秒后执行，之后每2000毫秒执行一次！");
     }*/
     // @Scheduled(cron = "* 22 23 * * ?")
-    @Scheduled(cron = "* 22 2,3 * * ?")
+    @Scheduled(cron = "0 22 2,3 * * ?")
     public void updataUserTodaystatus() {
         JdFruit dFruit = new JdFruit();
         dFruit.setUserTodaystatus("0");
@@ -68,8 +68,8 @@ public class ScheduledTask {
         dPlantbean.setUserTodaystatus("0");
         jdPlantbeanService.updateAll(dPlantbean);
         //初始化库存数量
-        redisTemplate.opsForValue().set("numfruit", 2);
-        redisTemplate.opsForValue().set("numplantbean",7);
+        redisTemplate.opsForValue().set("numfruit", 3);
+        redisTemplate.opsForValue().set("numplantbean",10);
         redisTemplate.opsForValue().set("numpet", 0);
 
     }
@@ -78,7 +78,7 @@ public class ScheduledTask {
     //  @Scheduled(cron = "* 27 19 * * ?")
    //  @Scheduled(cron = "* 10 16 * * ?")
 
-    @Scheduled(cron = "* 22 0,1 * * ?")
+    @Scheduled(cron = "0 22 0,1 * * ?")
     public void taskQueryMysql() {
         deleteByPrex("user:");
         System.out.println("shanchu");

@@ -4,9 +4,17 @@ import com.demo.ai.entity.JdMobilecity;
 import com.demo.ai.service.JdMobilecityService;
 import com.demo.ai.service.JdPetService;
 import com.demo.ai.service.JdPlantbeanService;
+import com.demo.ai.util.RestTemplateUtils;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -27,6 +35,8 @@ public class MobileTask {
     private JdPetService jdPetService;
     @Autowired
     private JdPlantbeanService jdPlantbeanService;
+    @Autowired
+    private RestTemplateUtils httpAsyncExecutor;
 
     @Autowired
     private RedisTemplate<String, Serializable> redisTemplate;
@@ -52,11 +62,53 @@ public class MobileTask {
     public void task2() {
         System.out.println("延迟1000毫秒后执行，之后每2000毫秒执行一次！");
     }*/
+    public static JavaType getCollectionType(ObjectMapper obj, Class<?> collectionClass, Class<?>... elementClasses) {
+        return obj.getTypeFactory().constructParametricType(collectionClass, elementClasses);
+    }
     // @Scheduled(cron = "* 22 23 * * ?")
-    @Scheduled(cron = "* 50 23 * * ?")
+    @Scheduled(cron = "0 15 9 * * ?")
     public void updataUserTodaystatus() {
-        jdMobilecity.deleteAll();
+        System.out.println("进入发送助理码模块");
+        ObjectMapper obj = new ObjectMapper();
+
+        Set<Serializable> setSerializable = redisTemplate.boundSetOps("selfmobile:").members();
+        String jsonJdPet = null;
+        try {
+            jsonJdPet = obj.writeValueAsString(setSerializable);
+            JavaType javaTypeJdPet = getCollectionType(obj, Set.class, String.class);
+
+            Set<String> petSet = obj.readValue(jsonJdPet, javaTypeJdPet);
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("UserAgent","Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1\"");
+            HttpEntity<String> requestEntity = new HttpEntity<>(null, headers);
+            for(String ss : petSet){
+                String urlTemplate = "http://jd.turinglabs.net/helpcode/create/"+ss;
+                ResponseEntity<String> responseEntity = httpAsyncExecutor.exchange(urlTemplate, HttpMethod.GET, requestEntity, String.class);
+                if (200 ==responseEntity.getStatusCodeValue()) {
+                    System.out.println("添加结果"+responseEntity.getBody());
+                } else {
+                    System.out.println(("#method# 远程调用失败 httpCode = [{}]"+responseEntity.getStatusCode()));
+                }
+
+            }
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+
+
        // deleteByPrex("mobile:");
+
+    }
+
+    /**
+     * shanchu
+     */
+    @Scheduled(cron = "0 50 23 * * ?")
+    public void updataSend() {
+        System.out.println("进入删除助理码模块");
+        redisTemplate.delete("selfmobile:");
+        jdMobilecity.deleteAll();
+        // deleteByPrex("mobile:");
 
     }
 
@@ -64,8 +116,9 @@ public class MobileTask {
     //  @Scheduled(cron = "* 27 19 * * ?")
     //  @Scheduled(cron = "* 10 16 * * ?")
 
-    @Scheduled(cron = "* 15 8,9,10,13,15,18,20,21,22 * * ?")
+    @Scheduled(cron = "0 45 8,9,10,13,15,18,20,21,22 * * ?")
     public void taskQueryMysql() {
+        System.out.println("进入生成助理码");
         deleteByPrex("mobile:");
         System.out.println("shanchu");
         //4次需要弄5个人

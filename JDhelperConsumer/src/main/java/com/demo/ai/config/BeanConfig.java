@@ -9,6 +9,7 @@ import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactor
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
+import org.springframework.web.client.RestTemplate;
 
 import java.io.Serializable;
 
@@ -30,6 +31,10 @@ public class BeanConfig {
         template.setConnectionFactory(redisConnectionFactory);
         template.afterPropertiesSet();
         return template;
+    }
+    @Bean
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
     }
    /* @Bean
     public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory factory) {
