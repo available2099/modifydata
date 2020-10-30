@@ -66,7 +66,7 @@ public class MobileTask {
         return obj.getTypeFactory().constructParametricType(collectionClass, elementClasses);
     }
     // @Scheduled(cron = "* 22 23 * * ?")
-    @Scheduled(cron = "0 15 9 * * ?")
+    @Scheduled(cron = "0 25,55 9 * * ?")
     public void updataUserTodaystatus() {
         System.out.println("进入发送助理码模块");
         ObjectMapper obj = new ObjectMapper();
