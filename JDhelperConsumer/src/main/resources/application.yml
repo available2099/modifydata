@@ -4,7 +4,7 @@ spring:
   application:
     name: jdconsumer
   datasource:
-    url: jdbc:mysql://172.86.70.59:3339/lihao?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8&useSSL=false
+    url: jdbc:mysql://67.230.168.201:3339/lihao?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8&useSSL=false
     username: root
     password: lihao
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -20,7 +20,7 @@ spring:
   rabbitmq:
     username: lihao
     password: lihao
-    addresses: 172.86.70.59:5672
+    addresses: 67.230.168.201:5672
     virtual-host: /
     connection-timeout: 15000
     listener:
@@ -39,7 +39,7 @@ spring:
         concurrency: 5
         max-concurrency: 10
   redis:
-    host: 172.86.70.59
+    host: 67.230.168.201
     port: 6379
     password: lihao
     database: 0

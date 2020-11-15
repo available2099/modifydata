@@ -78,19 +78,48 @@ public class JdHelperController {
         String[] md5arry = new String[]{"760517d4be0b4082a5c6cf5529e4599e", "fnfkmp5hx2byrqss7h5jr5j2wtnlfimruj4z7ii"};
         String md5 = "";
         if (!ArrayUtils.contains(md5arry, subscriptionurl)) {
-            redisTemplate.setEnableTransactionSupport(true);//开启事务的支持
-            redisTemplate.watch("num" + type);//watch某个key,当该key被其它客户端改变时,则会中断当前的操作
+          //  redisTemplate.setEnableTransactionSupport(true);//开启事务的支持
+          //  redisTemplate.watch("num" + type);//watch某个key,当该key被其它客户端改变时,则会中断当前的操作
 
             String numTemp = obj.writeValueAsString(redisTemplate.opsForValue().get("num" + type));
+            System.out.println("----" + type + "----剩余库存："+numTemp);
 
             long num = Long.valueOf(numTemp);//获取当前商品的数量
             if (num <= 0) {//检查当前商品的数量
                 System.out.println("----" + type + "----秒杀已结束");
             } else {
-                redisTemplate.multi();//事务
-                redisTemplate.boundValueOps("num" + type).decrement(1);//下单成功 商品数量减1
-                List<Object> exec = redisTemplate.exec();//执行事务
-                if (exec == null || exec.size() == 0) {
+                long stock =  redisTemplate.opsForValue().decrement("num" + type,1);
+
+                if(stock<0){
+                    num = Long.valueOf(obj.writeValueAsString(redisTemplate.opsForValue().get("num" + type)));//获取当前商品的数量
+                    if(num!=0 && num < 1){
+                        //返回redis库存
+                        redisTemplate.opsForValue().increment("num" + type,1);
+                    }else if(num == 0){
+                        redisTemplate.opsForValue().set("num" + type,0);
+                    }
+                    System.out.println("----" + type + "----秒杀失败");
+
+                }else {
+
+                    System.out.println("----" + type + "----秒杀成功");
+                    switch (type) {
+                        case "fruit":
+                            md5 = "760517d4be0b4082a5c6cf5529e4599e";
+                            break;
+                        case "pet":
+                            md5 = "";
+                            break;
+                        case "plantbean":
+                            md5 = "fnfkmp5hx2byrqss7h5jr5j2wtnlfimruj4z7ii";
+                            break;
+                    }
+                }
+
+            //    redisTemplate.multi();//事务
+           //     redisTemplate.boundValueOps("num" + type).decrement(1);//下单成功 商品数量减1
+               // List<Object> exec = redisTemplate.exec();//执行事务
+    /*            if (exec == null || exec.size() == 0) {
                     System.out.println("----" + type + "----秒杀失败");
                 } else {
                     System.out.println("----" + type + "----秒杀成功");
@@ -105,7 +134,7 @@ public class JdHelperController {
                             md5 = "fnfkmp5hx2byrqss7h5jr5j2wtnlfimruj4z7ii";
                             break;
                     }
-                }
+                }*/
             }
 
         }

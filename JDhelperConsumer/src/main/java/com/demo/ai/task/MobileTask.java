@@ -116,7 +116,7 @@ public class MobileTask {
     //  @Scheduled(cron = "* 27 19 * * ?")
     //  @Scheduled(cron = "* 10 16 * * ?")
 
-    @Scheduled(cron = "0 45 8,9,10,13,15,18,20,21,22 * * ?")
+    @Scheduled(cron = "0 42 8,9,10,11,13,15,18,20,21,22 * * ?")
     public void taskQueryMysql() {
         System.out.println("进入生成助理码");
         deleteByPrex("mobile:");
