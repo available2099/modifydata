@@ -1,11 +1,10 @@
 package com.demo.ai.task;
 
+import com.demo.ai.entity.JdHelp;
+import com.demo.ai.entity.JdHelpUrl;
 import com.demo.ai.entity.JdMobilecity;
-import com.demo.ai.service.JdMobilecityService;
-import com.demo.ai.service.JdPetService;
-import com.demo.ai.service.JdPlantbeanService;
+import com.demo.ai.service.*;
 import com.demo.ai.util.RestTemplateUtils;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.collections4.CollectionUtils;
@@ -15,19 +14,17 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Component
-public class MobileTask {
+public class JDTask {
     @Autowired
     private JdMobilecityService jdMobilecity;
     @Autowired
@@ -36,7 +33,10 @@ public class MobileTask {
     private JdPlantbeanService jdPlantbeanService;
     @Autowired
     private RestTemplateUtils httpAsyncExecutor;
-
+    @Autowired
+    private JdHelpService jdHelp;
+    @Autowired
+    JdHelpUrlService jdHelpUrlService;
     @Autowired
     private RedisTemplate<String, Serializable> redisTemplate;
 
@@ -65,36 +65,41 @@ public class MobileTask {
         return obj.getTypeFactory().constructParametricType(collectionClass, elementClasses);
     }
     // @Scheduled(cron = "* 22 23 * * ?")
-   // @Scheduled(cron = "0 25,55 9 * * ?")
+    @Scheduled(cron = "0 25,55 9 1,10,20 * ?")
     public void updataUserTodaystatus() {
         System.out.println("进入发送助理码模块");
+        Map<String,String> urlMap = new HashMap<>();
+
         ObjectMapper obj = new ObjectMapper();
-
-        Set<Serializable> setSerializable = redisTemplate.boundSetOps("selfmobile:").members();
-        String jsonJdPet = null;
-        try {
-            jsonJdPet = obj.writeValueAsString(setSerializable);
-            JavaType javaTypeJdPet = getCollectionType(obj, Set.class, String.class);
-
-            Set<String> petSet = obj.readValue(jsonJdPet, javaTypeJdPet);
+        JdHelpUrl jdHelpUrl = new JdHelpUrl();
+        jdHelpUrl.setStatus("1");
+        List<JdHelpUrl>   jdHelpUrlList =   jdHelpUrlService.queryAll(jdHelpUrl);
+        for(JdHelpUrl jd:  jdHelpUrlList){
+            urlMap.put(jd.getTaskType(),jd.getUrl());
+        }
+        JdHelp dFruit = new JdHelp();
+        dFruit.setUserStatus("1");
+        //   dFruit.setCreateTime(localDate2Date(LocalDate.now().plusDays(-1)));
+        //  dFruit.setUpdateTime(localDate2Date(LocalDate.now()));
+        dFruit.setUserTodaystatus("1");
+        dFruit.setTodayEffectcount(null);
+        dFruit.setTodaycount(null);
+        dFruit.setCount(null);
+        List<JdHelp>   helpList = jdHelp.queryAll(dFruit);
+       // Set<Serializable> setSerializable = redisTemplate.boundSetOps("selfmobile:").members();
+        for(JdHelp jdh : helpList){
             HttpHeaders headers = new HttpHeaders();
             headers.add("UserAgent","Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1\"");
-           headers.add("x-forwarded-for","");
+            headers.add("x-forwarded-for",jdh.getIp());
             HttpEntity<String> requestEntity = new HttpEntity<>(null, headers);
-            for(String ss : petSet){
-                String urlTemplate = "http://jd.turinglabs.net/helpcode/create/"+ss;
-                ResponseEntity<String> responseEntity = httpAsyncExecutor.exchange(urlTemplate, HttpMethod.GET, requestEntity, String.class);
-                if (200 ==responseEntity.getStatusCodeValue()) {
-                    System.out.println("添加结果"+responseEntity.getBody());
-                } else {
-                    System.out.println(("#method# 远程调用失败 httpCode = [{}]"+responseEntity.getStatusCode()));
-                }
-
+            String urlTemplate = urlMap.get(jdh.getTaskType())+jdh.getUserMd5();
+            ResponseEntity<String> responseEntity = httpAsyncExecutor.exchange(urlTemplate, HttpMethod.GET, requestEntity, String.class);
+            if (200 ==responseEntity.getStatusCodeValue()) {
+                System.out.println("添加结果"+responseEntity.getBody());
+            } else {
+                System.out.println(("#method# 远程调用失败 httpCode = [{}]"+responseEntity.getStatusCode()));
             }
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
         }
-
 
        // deleteByPrex("mobile:");
 

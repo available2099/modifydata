@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.demo.ai.dao.VpsDeviceDao">
+
+    <resultMap type="com.demo.ai.entity.VpsDevice" id="VpsDeviceMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="name" column="name" jdbcType="VARCHAR"/>
+        <result property="level" column="level" jdbcType="OTHER"/>
+        <result property="countryCode" column="country_code" jdbcType="VARCHAR"/>
+        <result property="server" column="server" jdbcType="VARCHAR"/>
+        <result property="ip" column="ip" jdbcType="VARCHAR"/>
+        <result property="alllink" column="alllink" jdbcType="INTEGER"/>
+        <result property="status" column="status" jdbcType="OTHER"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="VpsDeviceMap">
+        select
+          id, name, level, country_code, server, ip, alllink, status
+        from lihao.vps_device
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="VpsDeviceMap">
+        select
+          id, name, level, country_code, server, ip, alllink, status
+        from lihao.vps_device
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="VpsDeviceMap">
+        select
+        id, name, level, country_code, server, ip, alllink, status
+        from lihao.vps_device
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="name != null and name != ''">
+                and name = #{name}
+            </if>
+            <if test="level != null">
+                and level = #{level}
+            </if>
+            <if test="countryCode != null and countryCode != ''">
+                and country_code = #{countryCode}
+            </if>
+            <if test="server != null and server != ''">
+                and server = #{server}
+            </if>
+            <if test="ip != null and ip != ''">
+                and ip = #{ip}
+            </if>
+            <if test="alllink != null">
+                and alllink = #{alllink}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into lihao.vps_device(name, level, country_code, server, ip, alllink, status)
+        values (#{name}, #{level}, #{countryCode}, #{server}, #{ip}, #{alllink}, #{status})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into lihao.vps_device(name, level, country_code, server, ip, alllink, status)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.name}, #{entity.level}, #{entity.countryCode}, #{entity.server}, #{entity.ip}, #{entity.alllink},
+            #{entity.status})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into lihao.vps_device(name, level, country_code, server, ip, alllink, status)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.name}, #{entity.level}, #{entity.countryCode}, #{entity.server}, #{entity.ip}, #{entity.alllink},
+            #{entity.status})
+        </foreach>
+        on duplicate key update
+        name = values(name) , level = values(level) , country_code = values(country_code) , server = values(server) , ip
+        = values(ip) , alllink = values(alllink) , status = values(status)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update lihao.vps_device
+        <set>
+            <if test="name != null and name != ''">
+                name = #{name},
+            </if>
+            <if test="level != null">
+                level = #{level},
+            </if>
+            <if test="countryCode != null and countryCode != ''">
+                country_code = #{countryCode},
+            </if>
+            <if test="server != null and server != ''">
+                server = #{server},
+            </if>
+            <if test="ip != null and ip != ''">
+                ip = #{ip},
+            </if>
+            <if test="alllink != null">
+                alllink = #{alllink},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from lihao.vps_device where id = #{id}
+    </delete>
+
+</mapper>

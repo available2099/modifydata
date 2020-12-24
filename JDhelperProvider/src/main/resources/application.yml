@@ -4,7 +4,7 @@ spring:
   application:
     name: jdprovider
   datasource:
-    url: jdbc:mysql://67.230.168.201:3339/lihao?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8&useSSL=false
+    url: jdbc:mysql://72.19.12.227:3339/lihao?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8&useSSL=false
     username: root
     password: lihao
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -20,7 +20,7 @@ spring:
   rabbitmq:
     username: lihao
     password: lihao
-    addresses: 67.230.168.201:5672
+    addresses: 72.19.12.227:5672
     virtual-host: /
     connection-timeout: 15000
     publisher-confirms: true
@@ -29,7 +29,7 @@ spring:
       mandatory: true
 
   redis:
-    host: 67.230.168.201
+    host: 72.19.12.227
     port: 6379
     password: lihao
     database: 0

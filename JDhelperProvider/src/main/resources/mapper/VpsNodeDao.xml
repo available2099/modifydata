@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.demo.ai.dao.VpsNodeDao">
+
+    <resultMap type="com.demo.ai.entity.VpsNode" id="VpsNodeMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="userId" column="user_id" jdbcType="INTEGER"/>
+        <result property="type" column="type" jdbcType="VARCHAR"/>
+        <result property="name" column="name" jdbcType="VARCHAR"/>
+        <result property="groupId" column="group_id" jdbcType="INTEGER"/>
+        <result property="countryCode" column="country_code" jdbcType="VARCHAR"/>
+        <result property="server" column="server" jdbcType="VARCHAR"/>
+        <result property="tag" column="tag" jdbcType="VARCHAR"/>
+        <result property="isSubscribe" column="is_subscribe" jdbcType="OTHER"/>
+        <result property="sort" column="sort" jdbcType="INTEGER"/>
+        <result property="status" column="status" jdbcType="OTHER"/>
+        <result property="up" column="up" jdbcType="INTEGER"/>
+        <result property="down" column="down" jdbcType="INTEGER"/>
+        <result property="alllink" column="alllink" jdbcType="INTEGER"/>
+        <result property="desc" column="desc" jdbcType="VARCHAR"/>
+        <result property="v2Id" column="v2_id" jdbcType="VARCHAR"/>
+        <result property="v2AlterId" column="v2_alter_id" jdbcType="INTEGER"/>
+        <result property="v2Port" column="v2_port" jdbcType="INTEGER"/>
+        <result property="v2Method" column="v2_method" jdbcType="VARCHAR"/>
+        <result property="v2Net" column="v2_net" jdbcType="VARCHAR"/>
+        <result property="v2Type" column="v2_type" jdbcType="VARCHAR"/>
+        <result property="v2Host" column="v2_host" jdbcType="VARCHAR"/>
+        <result property="v2Path" column="v2_path" jdbcType="VARCHAR"/>
+        <result property="v2Tls" column="v2_tls" jdbcType="OTHER"/>
+        <result property="v2InsiderPort" column="v2_insider_port" jdbcType="INTEGER"/>
+        <result property="v2OutsiderPort" column="v2_outsider_port" jdbcType="INTEGER"/>
+        <result property="createdAt" column="created_at" jdbcType="TIMESTAMP"/>
+        <result property="updatedAt" column="updated_at" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="VpsNodeMap">
+        select
+          id, user_id, type, name, group_id, country_code, server, tag, is_subscribe, sort, status, up, down, alllink, desc, v2_id, v2_alter_id, v2_port, v2_method, v2_net, v2_type, v2_host, v2_path, v2_tls, v2_insider_port, v2_outsider_port, created_at, updated_at
+        from lihao.vps_node
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="VpsNodeMap">
+        select
+          id, user_id, type, name, group_id, country_code, server, tag, is_subscribe, sort, status, up, down, alllink, desc, v2_id, v2_alter_id, v2_port, v2_method, v2_net, v2_type, v2_host, v2_path, v2_tls, v2_insider_port, v2_outsider_port, created_at, updated_at
+        from lihao.vps_node
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="VpsNodeMap">
+        select
+        id, user_id, type, name, group_id, country_code, server, tag, is_subscribe, sort, status, up, down, alllink,
+        desc, v2_id, v2_alter_id, v2_port, v2_method, v2_net, v2_type, v2_host, v2_path, v2_tls, v2_insider_port,
+        v2_outsider_port, created_at, updated_at
+        from lihao.vps_node
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="userId != null">
+                and user_id = #{userId}
+            </if>
+            <if test="type != null and type != ''">
+                and type = #{type}
+            </if>
+            <if test="name != null and name != ''">
+                and name = #{name}
+            </if>
+            <if test="groupId != null">
+                and group_id = #{groupId}
+            </if>
+            <if test="countryCode != null and countryCode != ''">
+                and country_code = #{countryCode}
+            </if>
+            <if test="server != null and server != ''">
+                and server = #{server}
+            </if>
+            <if test="tag != null and tag != ''">
+                and tag = #{tag}
+            </if>
+            <if test="isSubscribe != null">
+                and is_subscribe = #{isSubscribe}
+            </if>
+            <if test="sort != null">
+                and sort = #{sort}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="up != null">
+                and up = #{up}
+            </if>
+            <if test="down != null">
+                and down = #{down}
+            </if>
+            <if test="alllink != null">
+                and alllink = #{alllink}
+            </if>
+            <if test="desc != null and desc != ''">
+                and desc = #{desc}
+            </if>
+            <if test="v2Id != null and v2Id != ''">
+                and v2_id = #{v2Id}
+            </if>
+            <if test="v2AlterId != null">
+                and v2_alter_id = #{v2AlterId}
+            </if>
+            <if test="v2Port != null">
+                and v2_port = #{v2Port}
+            </if>
+            <if test="v2Method != null and v2Method != ''">
+                and v2_method = #{v2Method}
+            </if>
+            <if test="v2Net != null and v2Net != ''">
+                and v2_net = #{v2Net}
+            </if>
+            <if test="v2Type != null and v2Type != ''">
+                and v2_type = #{v2Type}
+            </if>
+            <if test="v2Host != null and v2Host != ''">
+                and v2_host = #{v2Host}
+            </if>
+            <if test="v2Path != null and v2Path != ''">
+                and v2_path = #{v2Path}
+            </if>
+            <if test="v2Tls != null">
+                and v2_tls = #{v2Tls}
+            </if>
+            <if test="v2InsiderPort != null">
+                and v2_insider_port = #{v2InsiderPort}
+            </if>
+            <if test="v2OutsiderPort != null">
+                and v2_outsider_port = #{v2OutsiderPort}
+            </if>
+            <if test="createdAt != null">
+                and created_at = #{createdAt}
+            </if>
+            <if test="updatedAt != null">
+                and updated_at = #{updatedAt}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into lihao.vps_node(user_id, type, name, group_id, country_code, server, tag, is_subscribe, sort, status, up, down, alllink, desc, v2_id, v2_alter_id, v2_port, v2_method, v2_net, v2_type, v2_host, v2_path, v2_tls, v2_insider_port, v2_outsider_port, created_at, updated_at)
+        values (#{userId}, #{type}, #{name}, #{groupId}, #{countryCode}, #{server}, #{tag}, #{isSubscribe}, #{sort}, #{status}, #{up}, #{down}, #{alllink}, #{desc}, #{v2Id}, #{v2AlterId}, #{v2Port}, #{v2Method}, #{v2Net}, #{v2Type}, #{v2Host}, #{v2Path}, #{v2Tls}, #{v2InsiderPort}, #{v2OutsiderPort}, #{createdAt}, #{updatedAt})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into lihao.vps_node(user_id, type, name, group_id, country_code, server, tag, is_subscribe, sort, status,
+        up, down, alllink, desc, v2_id, v2_alter_id, v2_port, v2_method, v2_net, v2_type, v2_host, v2_path, v2_tls,
+        v2_insider_port, v2_outsider_port, created_at, updated_at)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.userId}, #{entity.type}, #{entity.name}, #{entity.groupId}, #{entity.countryCode},
+            #{entity.server}, #{entity.tag}, #{entity.isSubscribe}, #{entity.sort}, #{entity.status}, #{entity.up},
+            #{entity.down}, #{entity.alllink}, #{entity.desc}, #{entity.v2Id}, #{entity.v2AlterId}, #{entity.v2Port},
+            #{entity.v2Method}, #{entity.v2Net}, #{entity.v2Type}, #{entity.v2Host}, #{entity.v2Path}, #{entity.v2Tls},
+            #{entity.v2InsiderPort}, #{entity.v2OutsiderPort}, #{entity.createdAt}, #{entity.updatedAt})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into lihao.vps_node(user_id, type, name, group_id, country_code, server, tag, is_subscribe, sort, status,
+        up, down, alllink, desc, v2_id, v2_alter_id, v2_port, v2_method, v2_net, v2_type, v2_host, v2_path, v2_tls,
+        v2_insider_port, v2_outsider_port, created_at, updated_at)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.userId}, #{entity.type}, #{entity.name}, #{entity.groupId}, #{entity.countryCode},
+            #{entity.server}, #{entity.tag}, #{entity.isSubscribe}, #{entity.sort}, #{entity.status}, #{entity.up},
+            #{entity.down}, #{entity.alllink}, #{entity.desc}, #{entity.v2Id}, #{entity.v2AlterId}, #{entity.v2Port},
+            #{entity.v2Method}, #{entity.v2Net}, #{entity.v2Type}, #{entity.v2Host}, #{entity.v2Path}, #{entity.v2Tls},
+            #{entity.v2InsiderPort}, #{entity.v2OutsiderPort}, #{entity.createdAt}, #{entity.updatedAt})
+        </foreach>
+        on duplicate key update
+        user_id = values(user_id) , type = values(type) , name = values(name) , group_id = values(group_id) ,
+        country_code = values(country_code) , server = values(server) , tag = values(tag) , is_subscribe =
+        values(is_subscribe) , sort = values(sort) , status = values(status) , up = values(up) , down = values(down) ,
+        alllink = values(alllink) , desc = values(desc) , v2_id = values(v2_id) , v2_alter_id = values(v2_alter_id) ,
+        v2_port = values(v2_port) , v2_method = values(v2_method) , v2_net = values(v2_net) , v2_type = values(v2_type)
+        , v2_host = values(v2_host) , v2_path = values(v2_path) , v2_tls = values(v2_tls) , v2_insider_port =
+        values(v2_insider_port) , v2_outsider_port = values(v2_outsider_port) , created_at = values(created_at) ,
+        updated_at = values(updated_at)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update lihao.vps_node
+        <set>
+            <if test="userId != null">
+                user_id = #{userId},
+            </if>
+            <if test="type != null and type != ''">
+                type = #{type},
+            </if>
+            <if test="name != null and name != ''">
+                name = #{name},
+            </if>
+            <if test="groupId != null">
+                group_id = #{groupId},
+            </if>
+            <if test="countryCode != null and countryCode != ''">
+                country_code = #{countryCode},
+            </if>
+            <if test="server != null and server != ''">
+                server = #{server},
+            </if>
+            <if test="tag != null and tag != ''">
+                tag = #{tag},
+            </if>
+            <if test="isSubscribe != null">
+                is_subscribe = #{isSubscribe},
+            </if>
+            <if test="sort != null">
+                sort = #{sort},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            <if test="up != null">
+                up = #{up},
+            </if>
+            <if test="down != null">
+                down = #{down},
+            </if>
+            <if test="alllink != null">
+                alllink = #{alllink},
+            </if>
+            <if test="desc != null and desc != ''">
+                desc = #{desc},
+            </if>
+            <if test="v2Id != null and v2Id != ''">
+                v2_id = #{v2Id},
+            </if>
+            <if test="v2AlterId != null">
+                v2_alter_id = #{v2AlterId},
+            </if>
+            <if test="v2Port != null">
+                v2_port = #{v2Port},
+            </if>
+            <if test="v2Method != null and v2Method != ''">
+                v2_method = #{v2Method},
+            </if>
+            <if test="v2Net != null and v2Net != ''">
+                v2_net = #{v2Net},
+            </if>
+            <if test="v2Type != null and v2Type != ''">
+                v2_type = #{v2Type},
+            </if>
+            <if test="v2Host != null and v2Host != ''">
+                v2_host = #{v2Host},
+            </if>
+            <if test="v2Path != null and v2Path != ''">
+                v2_path = #{v2Path},
+            </if>
+            <if test="v2Tls != null">
+                v2_tls = #{v2Tls},
+            </if>
+            <if test="v2InsiderPort != null">
+                v2_insider_port = #{v2InsiderPort},
+            </if>
+            <if test="v2OutsiderPort != null">
+                v2_outsider_port = #{v2OutsiderPort},
+            </if>
+            <if test="createdAt != null">
+                created_at = #{createdAt},
+            </if>
+            <if test="updatedAt != null">
+                updated_at = #{updatedAt},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from lihao.vps_node where id = #{id}
+    </delete>
+
+</mapper>

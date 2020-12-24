@@ -1,15 +1,10 @@
 package com.demo.ai.controller;
 
-import com.demo.ai.entity.JdFruit;
-import com.demo.ai.entity.JdMobilecity;
-import com.demo.ai.entity.JdPet;
-import com.demo.ai.entity.JdPlantbean;
+import com.demo.ai.entity.*;
 import com.demo.ai.producer.RabbitSender;
-import com.demo.ai.service.JdFruitService;
-import com.demo.ai.service.JdMobilecityService;
-import com.demo.ai.service.JdPetService;
-import com.demo.ai.service.JdPlantbeanService;
+import com.demo.ai.service.*;
 import com.demo.ai.util.RedisConfigTest;
+import com.demo.ai.util.SnowflakeIdWorker;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -48,6 +43,8 @@ public class JdHelperController {
     private ExecutorService userScheduler;
     @Autowired
     private JdMobilecityService jdMobilecity;
+    @Autowired
+    private JdHelpService jdHelp;
     @Autowired
     private RedisTemplate<String, Serializable> redisTemplate;
     private static SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
@@ -172,7 +169,7 @@ public class JdHelperController {
             String ip = getIpAddress(request);
             System.out.println("ip是多少：" + ip);
             //查询一下redis是否有数据，有的话返回空
-            if (redisTemplate.opsForValue().get("time:" + subscriptionurl) == null) {
+            if (redisTemplate.opsForValue().get("time:" + subscriptionurl) == null || "1".equals("1")) {
 
                 //     String[] md5arry = new String[]{"760517d4be0b4082a5c6cf5529e4599e","fnfkmp5hx2byrqss7h5jr5j2wtnlfimruj4z7ii"};
                 String md5 = "";
@@ -212,6 +209,7 @@ public class JdHelperController {
                 if ("fruit".equals(type) || "plantbean".equals(type) || "pet".equals(type)) {
                     Map<String, Object> properties = new HashMap<>();
                     properties.put("md5", subscriptionurl);
+                    properties.put("ip", ip);
                     properties.put("send_time", simpleDateFormat.format(new Date()));
                     userScheduler.execute(() -> {
                                 try {
@@ -287,6 +285,45 @@ public class JdHelperController {
         RedisConfigTest.testSetOperation();
         RedisConfigTest.testValueOption();*/
                 //   BigInteger m = new BigInteger(String.valueOf(21));
+
+                //新版本搞事情
+                userScheduler.execute(() -> {
+                           //存数据到数据库
+                    JdHelp jdFruit = new JdHelp();
+                    jdFruit.setUserMd5(subscriptionurl);
+                    jdFruit.setIp(ip);
+                    jdFruit.setUserStatus("1");
+                    jdFruit.setTaskType(type);
+                    jdFruit.setUniqueId(SnowflakeIdWorker.generateId().toString());
+                    jdFruit.setUserTodaystatus("1");
+                    jdFruit.setTodaycount(1);
+                    jdFruit.setUpdateTime(new Date());
+                    jdFruit.setCreateTime(new Date());
+                    jdHelp.insert(jdFruit);
+                        //存数据到redis
+                        }
+                );
+
+                //redis查询数据
+
+                Set<Serializable> fruitSetSerializable = redisTemplate.boundSetOps(type+":" + subscriptionurl).members();
+                String json = obj.writeValueAsString(fruitSetSerializable);
+                JavaType javaType = getCollectionType(obj, Set.class, JdHelp.class);
+
+                Set<JdHelp> fruitSet = obj.readValue(json, javaType);
+             /*   if (!json.contains("760517d4be0b4082a5c6cf5529e4599e")) {
+                    md5 = secondkill(type, subscriptionurl);
+                }*/
+                String newMd5 = "";
+                for (JdHelp fr : fruitSet) {
+                    if ("".equals(newMd5)) {
+                        newMd5 = fr.getUserMd5();
+                    } else {
+                        newMd5 = newMd5 + "@" + fr.getUserMd5();
+                    }
+                }
+                if(StringUtils.isNotBlank(newMd5))
+                    return newMd5;
                 return md5;
             }
         }

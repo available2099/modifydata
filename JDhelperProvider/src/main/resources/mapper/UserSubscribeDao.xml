@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.demo.ai.dao.UserSubscribeDao">
+
+    <resultMap type="com.demo.ai.entity.UserSubscribe" id="UserSubscribeMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="userId" column="user_id" jdbcType="INTEGER"/>
+        <result property="username" column="username" jdbcType="VARCHAR"/>
+        <result property="password" column="password" jdbcType="VARCHAR"/>
+        <result property="code" column="code" jdbcType="VARCHAR"/>
+        <result property="userPort" column="user_port" jdbcType="INTEGER"/>
+        <result property="fqText" column="fq_text" jdbcType="VARCHAR"/>
+        <result property="transferEnable" column="transfer_enable" jdbcType="INTEGER"/>
+        <result property="up" column="up" jdbcType="INTEGER"/>
+        <result property="down" column="down" jdbcType="INTEGER"/>
+        <result property="alllink" column="alllink" jdbcType="INTEGER"/>
+        <result property="times" column="times" jdbcType="INTEGER"/>
+        <result property="status" column="status" jdbcType="OTHER"/>
+        <result property="banDesc" column="ban_desc" jdbcType="VARCHAR"/>
+        <result property="wechat" column="wechat" jdbcType="VARCHAR"/>
+        <result property="qq" column="qq" jdbcType="VARCHAR"/>
+        <result property="usage" column="usage" jdbcType="VARCHAR"/>
+        <result property="payWay" column="pay_way" jdbcType="OTHER"/>
+        <result property="balance" column="balance" jdbcType="INTEGER"/>
+        <result property="enableTime" column="enable_time" jdbcType="OTHER"/>
+        <result property="expireTime" column="expire_time" jdbcType="OTHER"/>
+        <result property="remark" column="remark" jdbcType="VARCHAR"/>
+        <result property="level" column="level" jdbcType="OTHER"/>
+        <result property="isAdmin" column="is_admin" jdbcType="OTHER"/>
+        <result property="trafficResetDay" column="traffic_reset_day" jdbcType="OTHER"/>
+        <result property="createdAt" column="created_at" jdbcType="TIMESTAMP"/>
+        <result property="updatedAt" column="updated_at" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="UserSubscribeMap">
+        select
+          id, user_id, username, password, code, user_port, fq_text, transfer_enable, up, down, alllink, times, status, ban_desc, wechat, qq, usage, pay_way, balance, enable_time, expire_time, remark, level, is_admin, traffic_reset_day, created_at, updated_at
+        from lihao.user_subscribe
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="UserSubscribeMap">
+        select
+          id, user_id, username, password, code, user_port, fq_text, transfer_enable, up, down, alllink, times, status, ban_desc, wechat, qq, usage, pay_way, balance, enable_time, expire_time, remark, level, is_admin, traffic_reset_day, created_at, updated_at
+        from lihao.user_subscribe
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="UserSubscribeMap">
+        select
+        id, user_id, username, password, code, user_port, fq_text, transfer_enable, up, down, alllink, times, status,
+        ban_desc, wechat, qq, usage, pay_way, balance, enable_time, expire_time, remark, level, is_admin,
+        traffic_reset_day, created_at, updated_at
+        from lihao.user_subscribe
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="userId != null">
+                and user_id = #{userId}
+            </if>
+            <if test="username != null and username != ''">
+                and username = #{username}
+            </if>
+            <if test="password != null and password != ''">
+                and password = #{password}
+            </if>
+            <if test="code != null and code != ''">
+                and code = #{code}
+            </if>
+            <if test="userPort != null">
+                and user_port = #{userPort}
+            </if>
+            <if test="fqText != null and fqText != ''">
+                and fq_text = #{fqText}
+            </if>
+            <if test="transferEnable != null">
+                and transfer_enable = #{transferEnable}
+            </if>
+            <if test="up != null">
+                and up = #{up}
+            </if>
+            <if test="down != null">
+                and down = #{down}
+            </if>
+            <if test="alllink != null">
+                and alllink = #{alllink}
+            </if>
+            <if test="times != null">
+                and times = #{times}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="banDesc != null and banDesc != ''">
+                and ban_desc = #{banDesc}
+            </if>
+            <if test="wechat != null and wechat != ''">
+                and wechat = #{wechat}
+            </if>
+            <if test="qq != null and qq != ''">
+                and qq = #{qq}
+            </if>
+            <if test="usage != null and usage != ''">
+                and usage = #{usage}
+            </if>
+            <if test="payWay != null">
+                and pay_way = #{payWay}
+            </if>
+            <if test="balance != null">
+                and balance = #{balance}
+            </if>
+            <if test="enableTime != null">
+                and enable_time = #{enableTime}
+            </if>
+            <if test="expireTime != null">
+                and expire_time = #{expireTime}
+            </if>
+            <if test="remark != null and remark != ''">
+                and remark = #{remark}
+            </if>
+            <if test="level != null">
+                and level = #{level}
+            </if>
+            <if test="isAdmin != null">
+                and is_admin = #{isAdmin}
+            </if>
+            <if test="trafficResetDay != null">
+                and traffic_reset_day = #{trafficResetDay}
+            </if>
+            <if test="createdAt != null">
+                and created_at = #{createdAt}
+            </if>
+            <if test="updatedAt != null">
+                and updated_at = #{updatedAt}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into lihao.user_subscribe(user_id, username, password, code, user_port, fq_text, transfer_enable, up, down, alllink, times, status, ban_desc, wechat, qq, usage, pay_way, balance, enable_time, expire_time, remark, level, is_admin, traffic_reset_day, created_at, updated_at)
+        values (#{userId}, #{username}, #{password}, #{code}, #{userPort}, #{fqText}, #{transferEnable}, #{up}, #{down}, #{alllink}, #{times}, #{status}, #{banDesc}, #{wechat}, #{qq}, #{usage}, #{payWay}, #{balance}, #{enableTime}, #{expireTime}, #{remark}, #{level}, #{isAdmin}, #{trafficResetDay}, #{createdAt}, #{updatedAt})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into lihao.user_subscribe(user_id, username, password, code, user_port, fq_text, transfer_enable, up,
+        down, alllink, times, status, ban_desc, wechat, qq, usage, pay_way, balance, enable_time, expire_time, remark,
+        level, is_admin, traffic_reset_day, created_at, updated_at)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.userId}, #{entity.username}, #{entity.password}, #{entity.code}, #{entity.userPort},
+            #{entity.fqText}, #{entity.transferEnable}, #{entity.up}, #{entity.down}, #{entity.alllink},
+            #{entity.times}, #{entity.status}, #{entity.banDesc}, #{entity.wechat}, #{entity.qq}, #{entity.usage},
+            #{entity.payWay}, #{entity.balance}, #{entity.enableTime}, #{entity.expireTime}, #{entity.remark},
+            #{entity.level}, #{entity.isAdmin}, #{entity.trafficResetDay}, #{entity.createdAt}, #{entity.updatedAt})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into lihao.user_subscribe(user_id, username, password, code, user_port, fq_text, transfer_enable, up,
+        down, alllink, times, status, ban_desc, wechat, qq, usage, pay_way, balance, enable_time, expire_time, remark,
+        level, is_admin, traffic_reset_day, created_at, updated_at)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.userId}, #{entity.username}, #{entity.password}, #{entity.code}, #{entity.userPort},
+            #{entity.fqText}, #{entity.transferEnable}, #{entity.up}, #{entity.down}, #{entity.alllink},
+            #{entity.times}, #{entity.status}, #{entity.banDesc}, #{entity.wechat}, #{entity.qq}, #{entity.usage},
+            #{entity.payWay}, #{entity.balance}, #{entity.enableTime}, #{entity.expireTime}, #{entity.remark},
+            #{entity.level}, #{entity.isAdmin}, #{entity.trafficResetDay}, #{entity.createdAt}, #{entity.updatedAt})
+        </foreach>
+        on duplicate key update
+        user_id = values(user_id) , username = values(username) , password = values(password) , code = values(code) ,
+        user_port = values(user_port) , fq_text = values(fq_text) , transfer_enable = values(transfer_enable) , up =
+        values(up) , down = values(down) , alllink = values(alllink) , times = values(times) , status = values(status) ,
+        ban_desc = values(ban_desc) , wechat = values(wechat) , qq = values(qq) , usage = values(usage) , pay_way =
+        values(pay_way) , balance = values(balance) , enable_time = values(enable_time) , expire_time =
+        values(expire_time) , remark = values(remark) , level = values(level) , is_admin = values(is_admin) ,
+        traffic_reset_day = values(traffic_reset_day) , created_at = values(created_at) , updated_at =
+        values(updated_at)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update lihao.user_subscribe
+        <set>
+            <if test="userId != null">
+                user_id = #{userId},
+            </if>
+            <if test="username != null and username != ''">
+                username = #{username},
+            </if>
+            <if test="password != null and password != ''">
+                password = #{password},
+            </if>
+            <if test="code != null and code != ''">
+                code = #{code},
+            </if>
+            <if test="userPort != null">
+                user_port = #{userPort},
+            </if>
+            <if test="fqText != null and fqText != ''">
+                fq_text = #{fqText},
+            </if>
+            <if test="transferEnable != null">
+                transfer_enable = #{transferEnable},
+            </if>
+            <if test="up != null">
+                up = #{up},
+            </if>
+            <if test="down != null">
+                down = #{down},
+            </if>
+            <if test="alllink != null">
+                alllink = #{alllink},
+            </if>
+            <if test="times != null">
+                times = #{times},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            <if test="banDesc != null and banDesc != ''">
+                ban_desc = #{banDesc},
+            </if>
+            <if test="wechat != null and wechat != ''">
+                wechat = #{wechat},
+            </if>
+            <if test="qq != null and qq != ''">
+                qq = #{qq},
+            </if>
+            <if test="usage != null and usage != ''">
+                usage = #{usage},
+            </if>
+            <if test="payWay != null">
+                pay_way = #{payWay},
+            </if>
+            <if test="balance != null">
+                balance = #{balance},
+            </if>
+            <if test="enableTime != null">
+                enable_time = #{enableTime},
+            </if>
+            <if test="expireTime != null">
+                expire_time = #{expireTime},
+            </if>
+            <if test="remark != null and remark != ''">
+                remark = #{remark},
+            </if>
+            <if test="level != null">
+                level = #{level},
+            </if>
+            <if test="isAdmin != null">
+                is_admin = #{isAdmin},
+            </if>
+            <if test="trafficResetDay != null">
+                traffic_reset_day = #{trafficResetDay},
+            </if>
+            <if test="createdAt != null">
+                created_at = #{createdAt},
+            </if>
+            <if test="updatedAt != null">
+                updated_at = #{updatedAt},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from lihao.user_subscribe where id = #{id}
+    </delete>
+
+</mapper>

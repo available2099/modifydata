@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.demo.ai.dao.InboundDao">
+
+    <resultMap type="com.demo.ai.entity.Inbound" id="InboundMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="server" column="server" jdbcType="VARCHAR"/>
+        <result property="port" column="port" jdbcType="INTEGER"/>
+        <result property="listen" column="listen" jdbcType="VARCHAR"/>
+        <result property="protocol" column="protocol" jdbcType="VARCHAR"/>
+        <result property="settings" column="settings" jdbcType="VARCHAR"/>
+        <result property="streamSettings" column="stream_settings" jdbcType="VARCHAR"/>
+        <result property="tag" column="tag" jdbcType="VARCHAR"/>
+        <result property="sniffing" column="sniffing" jdbcType="VARCHAR"/>
+        <result property="remark" column="remark" jdbcType="VARCHAR"/>
+        <result property="up" column="up" jdbcType="INTEGER"/>
+        <result property="down" column="down" jdbcType="INTEGER"/>
+        <result property="enable" column="enable" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="InboundMap">
+        select
+          id, server, port, listen, protocol, settings, stream_settings, tag, sniffing, remark, up, down, enable
+        from lihao.inbound
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="InboundMap">
+        select
+          id, server, port, listen, protocol, settings, stream_settings, tag, sniffing, remark, up, down, enable
+        from lihao.inbound
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="InboundMap">
+        select
+        id, server, port, listen, protocol, settings, stream_settings, tag, sniffing, remark, up, down, enable
+        from lihao.inbound
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="server != null and server != ''">
+                and server = #{server}
+            </if>
+            <if test="port != null">
+                and port = #{port}
+            </if>
+            <if test="listen != null and listen != ''">
+                and listen = #{listen}
+            </if>
+            <if test="protocol != null and protocol != ''">
+                and protocol = #{protocol}
+            </if>
+            <if test="settings != null and settings != ''">
+                and settings = #{settings}
+            </if>
+            <if test="streamSettings != null and streamSettings != ''">
+                and stream_settings = #{streamSettings}
+            </if>
+            <if test="tag != null and tag != ''">
+                and tag = #{tag}
+            </if>
+            <if test="sniffing != null and sniffing != ''">
+                and sniffing = #{sniffing}
+            </if>
+            <if test="remark != null and remark != ''">
+                and remark = #{remark}
+            </if>
+            <if test="up != null">
+                and up = #{up}
+            </if>
+            <if test="down != null">
+                and down = #{down}
+            </if>
+            <if test="enable != null">
+                and enable = #{enable}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into lihao.inbound(server, port, listen, protocol, settings, stream_settings, tag, sniffing, remark, up, down, enable)
+        values (#{server}, #{port}, #{listen}, #{protocol}, #{settings}, #{streamSettings}, #{tag}, #{sniffing}, #{remark}, #{up}, #{down}, #{enable})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into lihao.inbound(server, port, listen, protocol, settings, stream_settings, tag, sniffing, remark, up,
+        down, enable)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.server}, #{entity.port}, #{entity.listen}, #{entity.protocol}, #{entity.settings},
+            #{entity.streamSettings}, #{entity.tag}, #{entity.sniffing}, #{entity.remark}, #{entity.up}, #{entity.down},
+            #{entity.enable})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into lihao.inbound(server, port, listen, protocol, settings, stream_settings, tag, sniffing, remark, up,
+        down, enable)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.server}, #{entity.port}, #{entity.listen}, #{entity.protocol}, #{entity.settings},
+            #{entity.streamSettings}, #{entity.tag}, #{entity.sniffing}, #{entity.remark}, #{entity.up}, #{entity.down},
+            #{entity.enable})
+        </foreach>
+        on duplicate key update
+        server = values(server) , port = values(port) , listen = values(listen) , protocol = values(protocol) , settings
+        = values(settings) , stream_settings = values(stream_settings) , tag = values(tag) , sniffing = values(sniffing)
+        , remark = values(remark) , up = values(up) , down = values(down) , enable = values(enable)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update lihao.inbound
+        <set>
+            <if test="server != null and server != ''">
+                server = #{server},
+            </if>
+            <if test="port != null">
+                port = #{port},
+            </if>
+            <if test="listen != null and listen != ''">
+                listen = #{listen},
+            </if>
+            <if test="protocol != null and protocol != ''">
+                protocol = #{protocol},
+            </if>
+            <if test="settings != null and settings != ''">
+                settings = #{settings},
+            </if>
+            <if test="streamSettings != null and streamSettings != ''">
+                stream_settings = #{streamSettings},
+            </if>
+            <if test="tag != null and tag != ''">
+                tag = #{tag},
+            </if>
+            <if test="sniffing != null and sniffing != ''">
+                sniffing = #{sniffing},
+            </if>
+            <if test="remark != null and remark != ''">
+                remark = #{remark},
+            </if>
+            <if test="up != null">
+                up = #{up},
+            </if>
+            <if test="down != null">
+                down = #{down},
+            </if>
+            <if test="enable != null">
+                enable = #{enable},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from lihao.inbound where id = #{id}
+    </delete>
+
+</mapper>

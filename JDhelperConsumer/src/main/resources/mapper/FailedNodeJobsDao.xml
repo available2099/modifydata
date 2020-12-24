@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.demo.ai.dao.FailedNodeJobsDao">
+
+    <resultMap type="com.demo.ai.entity.FailedNodeJobs" id="FailedNodeJobsMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="createIp" column="create_ip" jdbcType="VARCHAR"/>
+        <result property="destnationIp" column="destnation_ip" jdbcType="VARCHAR"/>
+        <result property="server" column="server" jdbcType="VARCHAR"/>
+        <result property="json" column="json" jdbcType="VARCHAR"/>
+        <result property="count" column="count" jdbcType="INTEGER"/>
+        <result property="failedAt" column="failed_at" jdbcType="TIMESTAMP"/>
+        <result property="status" column="status" jdbcType="OTHER"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="FailedNodeJobsMap">
+        select
+          id, create_ip, destnation_ip, server, json, count, failed_at, status
+        from lihao.failed_node_jobs
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="FailedNodeJobsMap">
+        select
+          id, create_ip, destnation_ip, server, json, count, failed_at, status
+        from lihao.failed_node_jobs
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="FailedNodeJobsMap">
+        select
+        id, create_ip, destnation_ip, server, json, count, failed_at, status
+        from lihao.failed_node_jobs
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="createIp != null and createIp != ''">
+                and create_ip = #{createIp}
+            </if>
+            <if test="destnationIp != null and destnationIp != ''">
+                and destnation_ip = #{destnationIp}
+            </if>
+            <if test="server != null and server != ''">
+                and server = #{server}
+            </if>
+            <if test="json != null and json != ''">
+                and json = #{json}
+            </if>
+            <if test="count != null">
+                and count = #{count}
+            </if>
+            <if test="failedAt != null">
+                and failed_at = #{failedAt}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into lihao.failed_node_jobs(create_ip, destnation_ip, server, json, count, failed_at, status)
+        values (#{createIp}, #{destnationIp}, #{server}, #{json}, #{count}, #{failedAt}, #{status})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into lihao.failed_node_jobs(create_ip, destnation_ip, server, json, count, failed_at, status)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.createIp}, #{entity.destnationIp}, #{entity.server}, #{entity.json}, #{entity.count},
+            #{entity.failedAt}, #{entity.status})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into lihao.failed_node_jobs(create_ip, destnation_ip, server, json, count, failed_at, status)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.createIp}, #{entity.destnationIp}, #{entity.server}, #{entity.json}, #{entity.count},
+            #{entity.failedAt}, #{entity.status})
+        </foreach>
+        on duplicate key update
+        create_ip = values(create_ip) , destnation_ip = values(destnation_ip) , server = values(server) , json =
+        values(json) , count = values(count) , failed_at = values(failed_at) , status = values(status)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update lihao.failed_node_jobs
+        <set>
+            <if test="createIp != null and createIp != ''">
+                create_ip = #{createIp},
+            </if>
+            <if test="destnationIp != null and destnationIp != ''">
+                destnation_ip = #{destnationIp},
+            </if>
+            <if test="server != null and server != ''">
+                server = #{server},
+            </if>
+            <if test="json != null and json != ''">
+                json = #{json},
+            </if>
+            <if test="count != null">
+                count = #{count},
+            </if>
+            <if test="failedAt != null">
+                failed_at = #{failedAt},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from lihao.failed_node_jobs where id = #{id}
+    </delete>
+
+</mapper>

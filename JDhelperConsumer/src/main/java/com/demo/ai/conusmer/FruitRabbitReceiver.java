@@ -1,8 +1,10 @@
 package com.demo.ai.conusmer;
 
 import com.demo.ai.entity.JdFruit;
+import com.demo.ai.entity.JdHelp;
 import com.demo.ai.entity.Order;
 import com.demo.ai.service.JdFruitService;
+import com.demo.ai.service.JdHelpService;
 import com.rabbitmq.client.Channel;
 import org.springframework.amqp.rabbit.annotation.*;
 import org.springframework.amqp.support.AmqpHeaders;
@@ -19,7 +21,8 @@ import java.util.Map;
 public class FruitRabbitReceiver {
     @Autowired
     private JdFruitService jdFruitService;
-
+    @Autowired
+    private JdHelpService jdHelp;
     @RabbitListener(bindings = @QueueBinding(
             value = @Queue(value = "fruit",
                     durable = "true"),
@@ -46,6 +49,18 @@ public class FruitRabbitReceiver {
         jdFruit.setCreateTime(new Date());
 
         jdFruitService.insert(jdFruit);
+        //存数据到数据库
+        JdHelp jdFruit1 = new JdHelp();
+        jdFruit1.setUserMd5(md5);
+        jdFruit1.setIp((String) message.getHeaders().get("ip"));
+        jdFruit1.setTaskType("fruit");
+        jdFruit1.setUserStatus("1");
+        jdFruit1.setUniqueId((String)message.getHeaders().get("spring_returned_message_correlation"));
+        jdFruit1.setUserTodaystatus("1");
+        jdFruit1.setTodaycount(1);
+        jdFruit1.setUpdateTime(new Date());
+        jdFruit1.setCreateTime(new Date());
+        jdHelp.insert(jdFruit1);
         //手工ACK
         channel.basicAck(deliveryTag, false);
     }

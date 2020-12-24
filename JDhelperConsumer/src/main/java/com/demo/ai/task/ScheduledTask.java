@@ -77,7 +77,7 @@ public class ScheduledTask {
     //  @Scheduled(cron = "* 47 18 * * ?")
     //  @Scheduled(cron = "* 27 19 * * ?")
    //  @Scheduled(cron = "* 10 16 * * ?")
-    @Scheduled(cron = "0 22 0,1 * * ?")
+    @Scheduled(cron = "0 50 13 * * ?")
 //    @Scheduled(cron = "0 49 19 * * ?")
     public void taskQueryMysql() {
         deleteByPrex("user:");
@@ -123,7 +123,7 @@ public class ScheduledTask {
         int i = 0;
         Set<JdFruit> jdFruitSet = new HashSet<>();
         for (JdFruit jf : jdFruitList) {
-            if (i < 5) {
+            if (i < 10) {
                 jdFruitSet.add(jf);
 
             } else {
@@ -151,7 +151,7 @@ public class ScheduledTask {
         int j = 0;
         Set<JdPet> jdPetSet = new HashSet<>();
         for (JdPet jf : jdPetList) {
-            if (j < 6) {
+            if (j < 10) {
                 jdPetSet.add(jf);
 
             } else {
@@ -179,7 +179,7 @@ public class ScheduledTask {
         int k = 0;
         Set<JdPlantbean> jdPlantbeanSet = new HashSet<>();
         for (JdPlantbean jf : jdPlantbeanList) {
-            if (k < 4) {
+            if (k < 10) {
                 jdPlantbeanSet.add(jf);
 
             } else {

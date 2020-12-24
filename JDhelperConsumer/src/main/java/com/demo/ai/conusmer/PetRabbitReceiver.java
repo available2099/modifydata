@@ -1,7 +1,9 @@
 package com.demo.ai.conusmer;
 
+import com.demo.ai.entity.JdHelp;
 import com.demo.ai.entity.JdPet;
 import com.demo.ai.entity.Order;
+import com.demo.ai.service.JdHelpService;
 import com.demo.ai.service.JdPetService;
 import com.rabbitmq.client.Channel;
 import org.springframework.amqp.rabbit.annotation.*;
@@ -19,7 +21,8 @@ import java.util.Map;
 public class PetRabbitReceiver {
     @Autowired
     private JdPetService jdPetService;
-
+    @Autowired
+    private JdHelpService jdHelp;
     @RabbitListener(bindings = @QueueBinding(
             value = @Queue(value = "pet",
                     durable = "true"),
@@ -46,7 +49,18 @@ public class PetRabbitReceiver {
         jdPet.setCreateTime(new Date());
 
         jdPetService.insert(jdPet);
-
+        //存数据到数据库
+        JdHelp jdFruit = new JdHelp();
+        jdFruit.setUserMd5(md5);
+        jdFruit.setTaskType("pet");
+        jdFruit.setIp((String) message.getHeaders().get("ip"));
+        jdFruit.setUserStatus("1");
+        jdFruit.setUniqueId((String)message.getHeaders().get("spring_returned_message_correlation"));
+        jdFruit.setUserTodaystatus("1");
+        jdFruit.setTodaycount(1);
+        jdFruit.setUpdateTime(new Date());
+        jdFruit.setCreateTime(new Date());
+        jdHelp.insert(jdFruit);
         //手工ACK
         channel.basicAck(deliveryTag, false);
     }
