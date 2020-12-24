@@ -13,17 +13,12 @@ import java.util.List;
  * jd_plantBean(JdHelpUrl)表服务实现类
  *
  * @author makejava
- * @since 2020-12-24 19:43:09
+ * @since 2020-12-24 22:21:03
  */
 @Service("jdHelpUrlService")
 public class JdHelpUrlServiceImpl implements JdHelpUrlService {
     @Resource
     private JdHelpUrlDao jdHelpUrlDao;
-
-    @Override
-    public List<JdHelpUrl> queryAll(JdHelpUrl jdHelpUrl) {
-        return jdHelpUrlDao.queryAll(jdHelpUrl);
-    }
 
     /**
      * 通过ID查询单条数据

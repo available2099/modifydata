@@ -13,7 +13,7 @@ import java.math.BigInteger;
  * jd_plantBean(JdHelpUrl)表控制层
  *
  * @author makejava
- * @since 2020-12-24 19:43:11
+ * @since 2020-12-24 22:21:05
  */
 @RestController
 @RequestMapping("jdHelpUrl")

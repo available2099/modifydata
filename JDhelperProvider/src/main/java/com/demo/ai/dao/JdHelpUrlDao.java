@@ -1,7 +1,6 @@
 package com.demo.ai.dao;
 
 import com.demo.ai.entity.JdHelpUrl;
-import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.math.BigInteger;
@@ -11,9 +10,8 @@ import java.util.List;
  * jd_plantBean(JdHelpUrl)表数据库访问层
  *
  * @author makejava
- * @since 2020-12-24 19:43:06
+ * @since 2020-12-24 22:20:59
  */
-@Mapper
 public interface JdHelpUrlDao {
 
     /**

@@ -6,6 +6,7 @@
         <result property="id" column="id" jdbcType="OTHER"/>
         <result property="taskType" column="task_type" jdbcType="VARCHAR"/>
         <result property="url" column="url" jdbcType="VARCHAR"/>
+        <result property="helpCount" column="help_count" jdbcType="INTEGER"/>
         <result property="status" column="status" jdbcType="VARCHAR"/>
         <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
         <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
@@ -14,7 +15,7 @@
     <!--查询单个-->
     <select id="queryById" resultMap="JdHelpUrlMap">
         select
-          id, task_type, url, status, create_time, update_time
+          id, task_type, url, help_count, status, create_time, update_time
         from lihao.jd_help_url
         where id = #{id}
     </select>
@@ -22,7 +23,7 @@
     <!--查询指定行数据-->
     <select id="queryAllByLimit" resultMap="JdHelpUrlMap">
         select
-          id, task_type, url, status, create_time, update_time
+          id, task_type, url, help_count, status, create_time, update_time
         from lihao.jd_help_url
         limit #{offset}, #{limit}
     </select>
@@ -30,7 +31,7 @@
     <!--通过实体作为筛选条件查询-->
     <select id="queryAll" resultMap="JdHelpUrlMap">
         select
-        id, task_type, url, status, create_time, update_time
+        id, task_type, url, help_count, status, create_time, update_time
         from lihao.jd_help_url
         <where>
             <if test="id != null">
@@ -41,6 +42,9 @@
             </if>
             <if test="url != null and url != ''">
                 and url = #{url}
+            </if>
+            <if test="helpCount != null">
+                and help_count = #{helpCount}
             </if>
             <if test="status != null and status != ''">
                 and status = #{status}
@@ -56,27 +60,29 @@
 
     <!--新增所有列-->
     <insert id="insert" keyProperty="id" useGeneratedKeys="true">
-        insert into lihao.jd_help_url(task_type, url, status, create_time, update_time)
-        values (#{taskType}, #{url}, #{status}, #{createTime}, #{updateTime})
+        insert into lihao.jd_help_url(task_type, url, help_count, status, create_time, update_time)
+        values (#{taskType}, #{url}, #{helpCount}, #{status}, #{createTime}, #{updateTime})
     </insert>
 
     <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
-        insert into lihao.jd_help_url(task_type, url, status, create_time, update_time)
+        insert into lihao.jd_help_url(task_type, url, help_count, status, create_time, update_time)
         values
         <foreach collection="entities" item="entity" separator=",">
-            (#{entity.taskType}, #{entity.url}, #{entity.status}, #{entity.createTime}, #{entity.updateTime})
+            (#{entity.taskType}, #{entity.url}, #{entity.helpCount}, #{entity.status}, #{entity.createTime},
+            #{entity.updateTime})
         </foreach>
     </insert>
 
     <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
-        insert into lihao.jd_help_url(task_type, url, status, create_time, update_time)
+        insert into lihao.jd_help_url(task_type, url, help_count, status, create_time, update_time)
         values
         <foreach collection="entities" item="entity" separator=",">
-            (#{entity.taskType}, #{entity.url}, #{entity.status}, #{entity.createTime}, #{entity.updateTime})
+            (#{entity.taskType}, #{entity.url}, #{entity.helpCount}, #{entity.status}, #{entity.createTime},
+            #{entity.updateTime})
         </foreach>
         on duplicate key update
-        task_type = values(task_type) , url = values(url) , status = values(status) , create_time = values(create_time)
-        , update_time = values(update_time)
+        task_type = values(task_type) , url = values(url) , help_count = values(help_count) , status = values(status) ,
+        create_time = values(create_time) , update_time = values(update_time)
     </insert>
 
     <!--通过主键修改数据-->
@@ -88,6 +94,9 @@
             </if>
             <if test="url != null and url != ''">
                 url = #{url},
+            </if>
+            <if test="helpCount != null">
+                help_count = #{helpCount},
             </if>
             <if test="status != null and status != ''">
                 status = #{status},

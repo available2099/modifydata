@@ -9,10 +9,10 @@ import java.util.List;
  * jd_plantBean(JdHelpUrl)表服务接口
  *
  * @author makejava
- * @since 2020-12-24 19:43:07
+ * @since 2020-12-24 22:21:01
  */
 public interface JdHelpUrlService {
-    List<JdHelpUrl> queryAll(JdHelpUrl jdHelpUrl);
+
     /**
      * 通过ID查询单条数据
      *
