@@ -93,7 +93,7 @@
             select count(*) from lihao.jd_help where user_md5 = #{userMd5}
         </selectKey>
         <if test="count > 0">
-            update lihao.jd_help set todaycount =todaycount+1
+            update lihao.jd_help set todaycount =todaycount+1,ip =#{ip}
             <where>
                 user_md5 = #{userMd5}
             </where>

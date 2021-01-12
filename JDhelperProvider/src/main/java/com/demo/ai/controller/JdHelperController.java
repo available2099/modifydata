@@ -164,8 +164,8 @@ public class JdHelperController {
         // 2020-02-03T13:30:44
 
 //        if (userAgent.contains("Quantumult") && subscriptionurl.length() > 20) {
-        //判断长度
-        if (timeOrder.isBefore(timerequest) && subscriptionurl.length() > 20) {
+        //判断长度 timeOrder.isBefore(timerequest) &&
+        if ( subscriptionurl.length() > 20) {
             String ip = getIpAddress(request);
             System.out.println("ip是多少：" + ip);
             //查询一下redis是否有数据，有的话返回空

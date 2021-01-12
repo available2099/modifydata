@@ -2,7 +2,7 @@ package com.demo.ai.task;
 
 import com.demo.ai.entity.JdHelp;
 import com.demo.ai.entity.JdHelpUrl;
-import com.demo.ai.entity.JdMobilecity;
+import com.demo.ai.entity.JdHelp;
 import com.demo.ai.service.*;
 import com.demo.ai.util.RestTemplateUtils;
 import com.fasterxml.jackson.databind.JavaType;
@@ -16,17 +16,19 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestClientException;
 
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 public class JDTask {
     @Autowired
-    private JdMobilecityService jdMobilecity;
+    private JdMobilecityService JdHelp;
     @Autowired
     private JdPetService jdPetService;
     @Autowired
@@ -65,11 +67,11 @@ public class JDTask {
         return obj.getTypeFactory().constructParametricType(collectionClass, elementClasses);
     }
     // @Scheduled(cron = "* 22 23 * * ?")
-    @Scheduled(cron = "0 25,55 9 1,10,20 * ?")
-    public void updataUserTodaystatus() {
+    @Scheduled(cron = "0 25 8 1,10,20 * ?")
+    public void updataUserTodaystatus() throws InterruptedException {
         System.out.println("进入发送助理码模块");
         Map<String,String> urlMap = new HashMap<>();
-
+        Long start= System.currentTimeMillis();
         ObjectMapper obj = new ObjectMapper();
         JdHelpUrl jdHelpUrl = new JdHelpUrl();
         jdHelpUrl.setStatus("1");
@@ -88,23 +90,61 @@ public class JDTask {
         List<JdHelp>   helpList = jdHelp.queryAll(dFruit);
        // Set<Serializable> setSerializable = redisTemplate.boundSetOps("selfmobile:").members();
         for(JdHelp jdh : helpList){
-            HttpHeaders headers = new HttpHeaders();
-            headers.add("UserAgent","Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1\"");
-            headers.add("x-forwarded-for",jdh.getIp());
-            HttpEntity<String> requestEntity = new HttpEntity<>(null, headers);
-            String urlTemplate = urlMap.get(jdh.getTaskType())+jdh.getUserMd5();
-            ResponseEntity<String> responseEntity = httpAsyncExecutor.exchange(urlTemplate, HttpMethod.GET, requestEntity, String.class);
-            if (200 ==responseEntity.getStatusCodeValue()) {
-                System.out.println("添加结果"+responseEntity.getBody());
-            } else {
-                System.out.println(("#method# 远程调用失败 httpCode = [{}]"+responseEntity.getStatusCode()));
+            try {
+                sendCode(urlMap,jdh);
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                Thread.sleep(40000); //由类名调用
+                try {
+                    sendCode(urlMap,jdh);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }finally {
+                    Thread.sleep(10000); //由类名调用
+                    try {
+                        sendCode(urlMap,jdh);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    } finally {
+                        Thread.sleep(2000); //由类名调用
+                        try {
+                            sendCode(urlMap,jdh);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+
+                }
+
             }
+
         }
 
-       // deleteByPrex("mobile:");
+        System.out.println("发送助理码完毕:"+(System.currentTimeMillis()-start));
 
     }
 
+    private void sendCode(Map urlMap,JdHelp jdh ) throws Exception {
+        Random rand = new Random();
+        int MAX=10;//3-10秒间的随机数作为延迟时间
+        int MIN=3;
+        int randNumber = rand.nextInt(MAX - MIN + 1) + MIN;
+        //Thread.sleep(randNumber*1000); //由类名调用
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("UserAgent","Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1\"");
+        headers.add("x-forwarded-for",jdh.getIp());
+        HttpEntity<String> requestEntity = new HttpEntity<>(null, headers);
+        String urlTemplate = urlMap.get(jdh.getTaskType())+jdh.getUserMd5();
+        ResponseEntity<String> responseEntity = httpAsyncExecutor.exchange(urlTemplate, HttpMethod.GET, requestEntity, String.class);
+        if (200 ==responseEntity.getStatusCodeValue()) {
+            System.out.println("添加结果"+responseEntity.getBody());
+        } else {
+            System.out.println(("#method# 远程调用失败 httpCode = [{}]"+responseEntity.getStatusCode()));
+        }
+}
     /**
      * shanchu
      */
@@ -112,7 +152,7 @@ public class JDTask {
     public void updataSend() {
         System.out.println("进入删除助理码模块");
         redisTemplate.delete("selfmobile:");
-        jdMobilecity.deleteAll();
+        JdHelp.deleteAll();
         // deleteByPrex("mobile:");
 
     }
@@ -120,14 +160,14 @@ public class JDTask {
     //  @Scheduled(cron = "* 47 18 * * ?")
     //  @Scheduled(cron = "* 27 19 * * ?")
     //  @Scheduled(cron = "* 10 16 * * ?")
-
-   // @Scheduled(cron = "0 42 8,9,10,11,13,15,18,20,21,22 * * ?")
+    //  @Scheduled(cron = "* 26 23 * * ?")
+    @Scheduled(cron = "0 15,44 8,9,10,11,13,15,18,20,21,22,23,5 * * ?")
     public void taskQueryMysql() {
         System.out.println("进入生成助理码");
-        deleteByPrex("mobile:");
-        System.out.println("shanchu");
+       // deleteByPrex("mobile:");
+        //System.out.println("shanchu");
         //4次需要弄5个人
-        JdMobilecity dFruit = new JdMobilecity();
+        JdHelp dFruit = new JdHelp();
         dFruit.setUserStatus("1");
         //   dFruit.setCreateTime(localDate2Date(LocalDate.now().plusDays(-1)));
         //  dFruit.setUpdateTime(localDate2Date(LocalDate.now()));
@@ -135,58 +175,59 @@ public class JDTask {
         dFruit.setTodayEffectcount(null);
         dFruit.setTodaycount(null);
         dFruit.setCount(null);
-       
-        List<JdMobilecity> jdFruitList = jdMobilecity.queryAll(dFruit);
+        List<JdHelp>   helpList = jdHelp.queryAll(dFruit);
+        JdHelpUrl jdHelpUrl = new JdHelpUrl();
+        jdHelpUrl.setStatus("1");
+        List<JdHelpUrl>   jdHelpUrlList =   jdHelpUrlService.queryAll(jdHelpUrl);
 
-        //保存一份历史记录
-        //"fruit".equals(type) || "plantbean".equals(type) || "pet".equals(type)
+        for(JdHelpUrl jdurl :jdHelpUrlList){
+            List<JdHelp>  newJdHelp  =   helpList.stream().filter(a->a.getTaskType().equals(jdurl.getTaskType())).collect(Collectors.toList());
+            int i = 0;
+            Set<JdHelp> jdFruitSet = new HashSet<>();
+            for (JdHelp jf : newJdHelp) {
+                if (i < jdurl.getHelpCount()) {
+                    jdFruitSet.add(jf);
 
-      /*  redisTemplate.opsForZSet().add("hisfruit:",   (Serializable) jdFruitList,1);
-        redisTemplate.opsForZSet().add("hisplantbean:", (Serializable)jdPlantbeanList,1);
-        redisTemplate.opsForZSet().add("hispet:",(Serializable)jdPetList,1);
-*/
-
-        int i = 0;
-        Set<JdMobilecity> jdFruitSet = new HashSet<>();
-        for (JdMobilecity jf : jdFruitList) {
-            if (i < 11) {
-                jdFruitSet.add(jf);
-
-            } else {
-                //todo
-                for (JdMobilecity kjfset : jdFruitSet) {
-                    for (JdMobilecity jfset : jdFruitSet) {
-                        if (!kjfset.getUserMd5().equals(jfset.getUserMd5())) {
-                            redisTemplate.opsForSet().add("mobile:" + kjfset.getUserMd5(), jfset);
+                } else {
+                    //todo
+                    for (JdHelp kjfset : jdFruitSet) {
+                        for (JdHelp jfset : jdFruitSet) {
+                            if (!kjfset.getUserMd5().equals(jfset.getUserMd5())) {
+                                redisTemplate.opsForSet().add(jdurl.getTaskType()+":" + kjfset.getUserMd5(), jfset);
+                            }
                         }
                     }
+                    jdFruitSet.clear();
+                    i = 0;
+                    jdFruitSet.add(jf);
                 }
-                jdFruitSet.clear();
-                i = 0;
-                jdFruitSet.add(jf);
+                i++;
             }
-            i++;
-        }
-        for (JdMobilecity kjfset : jdFruitSet) {
-            for (JdMobilecity jfset : jdFruitSet) {
-                if (!kjfset.getUserMd5().equals(jfset.getUserMd5())) {
-                    redisTemplate.opsForSet().add("mobile:" + kjfset.getUserMd5(), jfset);
+            for (JdHelp kjfset : jdFruitSet) {
+                for (JdHelp jfset : jdFruitSet) {
+                    if (!kjfset.getUserMd5().equals(jfset.getUserMd5())) {
+                        redisTemplate.opsForSet().add(jdurl.getTaskType()+":" + kjfset.getUserMd5(), jfset);
+                    }
                 }
             }
+
+            //查出全部符合数据
+            //分组
+            //分别插入redis
+            //没更新掉的继续更新redis,可以使用set对象作为存储就不会重复了
+            System.out.println("更新状态！"+jdurl.getTaskType());
         }
 
-        //查出全部符合数据
-        //分组
-        //分别插入redis
-        //没更新掉的继续更新redis,可以使用set对象作为存储就不会重复了
-        System.out.println("更新状态！");
+
+
+
 
 /*        //查询数据更新数据状态
-        for (JdMobilecity jf : jdFruitList) {
+        for (JdHelp jf : jdFruitList) {
             //
-            Set<JdMobilecity> fruitSet = redisTemplate.boundSetOps("mobile:"+jf.getUserMd5()).members();
+            Set<JdHelp> fruitSet = redisTemplate.boundSetOps("mobile:"+jf.getUserMd5()).members();
             if (fruitSet.size() == 3) {
-                for (JdMobilecity jdf : fruitSet) {
+                for (JdHelp jdf : fruitSet) {
                     jdf.setUserStatus("0");
                     jdFruitService.update(jdf);
                 }

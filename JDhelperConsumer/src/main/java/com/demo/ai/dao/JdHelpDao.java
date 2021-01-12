@@ -1,6 +1,7 @@
 package com.demo.ai.dao;
 
 import com.demo.ai.entity.JdHelp;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.math.BigInteger;
@@ -12,6 +13,7 @@ import java.util.List;
  * @author makejava
  * @since 2020-12-24 17:23:47
  */
+@Mapper
 public interface JdHelpDao {
 
     /**

@@ -89,8 +89,19 @@
 
     <!--新增所有列-->
     <insert id="insert" keyProperty="id" useGeneratedKeys="true">
-        insert into lihao.jd_help(user_md5, unique_id, name, user_ck, task_type, ip, count, todaycount, today_effectcount, user_status, user_todaystatus, create_time, update_time)
-        values (#{userMd5}, #{uniqueId}, #{name}, #{userCk}, #{taskType}, #{ip}, #{count}, #{todaycount}, #{todayEffectcount}, #{userStatus}, #{userTodaystatus}, #{createTime}, #{updateTime})
+        <selectKey keyProperty="count" resultType="int" order="BEFORE">
+            select count(*) from lihao.jd_help where user_md5 = #{userMd5}
+        </selectKey>
+        <if test="count > 0">
+            update lihao.jd_help set todaycount =todaycount+1,ip =#{ip}
+            <where>
+                user_md5 = #{userMd5}
+            </where>
+        </if>
+        <if test="count==0">
+            insert into lihao.jd_help(user_md5, unique_id, name, user_ck, task_type, ip, count, todaycount, today_effectcount, user_status, user_todaystatus, create_time, update_time)
+            values (#{userMd5}, #{uniqueId}, #{name}, #{userCk}, #{taskType}, #{ip}, #{count}, #{todaycount}, #{todayEffectcount}, #{userStatus}, #{userTodaystatus}, #{createTime}, #{updateTime})
+        </if>
     </insert>
 
     <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">

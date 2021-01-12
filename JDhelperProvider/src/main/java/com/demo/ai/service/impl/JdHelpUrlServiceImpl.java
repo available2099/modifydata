@@ -77,4 +77,9 @@ public class JdHelpUrlServiceImpl implements JdHelpUrlService {
     public boolean deleteById(BigInteger id) {
         return this.jdHelpUrlDao.deleteById(id) > 0;
     }
+
+    @Override
+    public List<JdHelpUrl> queryAll(JdHelpUrl jdHelpUrl) {
+        return jdHelpUrlDao.queryAll(jdHelpUrl);
+    }
 }

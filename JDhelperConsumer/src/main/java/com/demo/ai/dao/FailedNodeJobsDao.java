@@ -1,6 +1,7 @@
 package com.demo.ai.dao;
 
 import com.demo.ai.entity.FailedNodeJobs;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.List;
  * @author makejava
  * @since 2020-12-24 17:17:46
  */
+@Mapper
 public interface FailedNodeJobsDao {
 
     /**

@@ -54,4 +54,5 @@ public interface JdHelpUrlService {
      */
     boolean deleteById(BigInteger id);
 
+    List<JdHelpUrl> queryAll(JdHelpUrl jdHelpUrl);
 }
