@@ -3,14 +3,19 @@ package com.demo.ai.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.demo.ai.entity.TextClassify;
 import com.demo.ai.service.JdHelpService;
+import com.demo.ai.util.HttpSyncExecutor;
 import com.demo.ai.util.OkHttpUtil;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.client.utils.URIBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.io.*;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -30,7 +35,8 @@ public class JdHelpController {
      */
     @Resource
     private JdHelpService jdHelpService;
-
+    @Autowired
+    private HttpSyncExecutor httpSyncExecutor;
     /**
      * 通过主键查询单条数据
      *
@@ -74,7 +80,64 @@ public class JdHelpController {
 //        System.out.println(resList);
 
     }
+/*
+    public Map<String,Object> getGetHttpResult(String url){
+        ObjectMapper objectMapper =new ObjectMapper();
+        return  httpSyncExecutor.getObject(url, null, Map.class, objectMapper, StandardCharsets.UTF_8);
+    }
+*/
 
+    @GetMapping("readget")
+    public void selectOneMore() {
+        List<String> resList = new ArrayList<>();
+        Map<String, String> resMap = new HashMap<>();
+        String[] domaintext = readfile();
+        System.out.println(domaintext);
+        for (String dod : domaintext) {
+            URI uri = null;
+
+            if(StringUtils.isNotBlank(dod)){
+                Map<String, String> paramte = new HashMap<>();
+                paramte.put("q", dod);
+                paramte.put("limitValue", String.valueOf(0.5));
+                //String strURL = uri.toString();
+                String str  = OkHttpUtil.get("http://10.43.48.228:25011/reject-service/parse",paramte);
+
+                //  System.out.println("getTextClassifies:<URL=>=(),paramte=(" + paramte.toString() + ")");
+                if (StringUtils.isNotEmpty(str)) {
+                    String jsonArrayString = null;
+                    try {
+                        jsonArrayString = JSONObject.parseObject(str).getOrDefault("data", null).toString();
+                    } catch (Exception e) {
+                        System.out.println("error"+str);
+                        e.printStackTrace();
+                    }
+                    JSONObject json = JSONObject.parseObject(jsonArrayString);
+
+                    System.out.println(json.get("prod")+","+json.get("inputText")+","+json.get("reject"));
+
+                }
+                try {
+                    uri = new URIBuilder("http://10.43.48.228:25011/reject-service/parse")
+                            .addParameter("q",dod)
+                            .addParameter("limitValue", String.valueOf(0.5))
+                            .build();
+                } catch (URISyntaxException e) {
+                    e.printStackTrace();
+                }
+            }
+
+        }
+
+       /* for (Map.Entry<String,String> entry : resMap.entrySet()) {
+            if(entry.getValue().contains("")){
+                System.out.println(entry.getKey()+"           "+entry.getValue());
+
+            }
+        }*/
+//        System.out.println(resList);
+
+    }
 
     public String[] readfile() {
         String[] geekModeSupportDomains = null;
