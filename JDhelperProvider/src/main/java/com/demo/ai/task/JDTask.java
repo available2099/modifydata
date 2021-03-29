@@ -1,8 +1,6 @@
 package com.demo.ai.task;
 
-import com.demo.ai.entity.JdHelp;
-import com.demo.ai.entity.JdHelpUrl;
-import com.demo.ai.entity.JdHelp;
+import com.demo.ai.entity.*;
 import com.demo.ai.service.*;
 import com.demo.ai.util.RestTemplateUtils;
 import com.fasterxml.jackson.databind.JavaType;
@@ -16,7 +14,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestClientException;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -268,7 +265,14 @@ public class JDTask {
             System.out.println("jjj");
         }
     }
+    @Scheduled(cron = "0 22 2,3 * * ?")
+    public void updateStock() {
+        //初始化库存数量
+        redisTemplate.opsForValue().set("numfruit", 2);
+        redisTemplate.opsForValue().set("numplantbean",9);
+        redisTemplate.opsForValue().set("numpet", 0);
 
+    }
     /**
      * 根据前缀删除key
      *

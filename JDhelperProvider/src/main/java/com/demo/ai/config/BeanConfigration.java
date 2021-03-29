@@ -4,6 +4,11 @@ import com.demo.ai.util.NamedThreadFactory;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.redisson.Redisson;
+import org.redisson.config.Config;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
@@ -11,12 +16,50 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.context.request.RequestContextListener;
 
 import java.io.Serializable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 @Configuration
 public class BeanConfigration{
+    @Value("${spring.redis.host}")
+    private String redis_host;
+
+    @Value("${spring.redis.port}")
+    private String redis_port;
+
+    @Value("${spring.redis.password}")
+    private String password;
+    Logger log = LoggerFactory.getLogger(BeanConfigration.class);
+
+    /**
+     * 单机模式
+     * @return
+     */
+    @Bean
+    public Redisson createRedisson() {
+        log.info("host:{},port:{}",redis_host,redis_port);
+        Config config = new Config();
+        config.useSingleServer().setAddress("redis://"+redis_host+":"+redis_port).setDatabase(0).setPassword(password);
+        return (Redisson) Redisson.create(config);
+    }
+    @Bean
+    public RequestContextListener requestContextListener(){
+        return new RequestContextListener();
+    }
+
+    /*    @Bean
+    public RedissonClient redissonClient() {
+        Config config = new Config();
+        config.useClusterServers()
+                .setScanInterval(2000)
+                .addNodeAddress("redis://72.19.12.227:6379");
+
+        RedissonClient redisson = Redisson.create(config);
+
+        return redisson;
+    }*/
     @Bean
     public RedisTemplate<String, Serializable> redisTemplate(LettuceConnectionFactory redisConnectionFactory) {
         RedisTemplate<String, Serializable> template = new RedisTemplate<>();

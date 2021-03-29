@@ -1,15 +1,21 @@
 package com.demo.ai.entity;
 
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.Date;
 
 /**
  * jd_plantBean(JdHelp)实体类
- *
  * @author makejava
  * @since 2020-12-24 16:53:17
  */
+@Getter
+@Setter
+@EqualsAndHashCode
 public class JdHelp implements Serializable {
     private static final long serialVersionUID = 285595574033012982L;
 
@@ -65,117 +71,5 @@ public class JdHelp implements Serializable {
      */
     private Date updateTime;
 
-
-    public BigInteger getId() {
-        return id;
-    }
-
-    public void setId(BigInteger id) {
-        this.id = id;
-    }
-
-    public String getUserMd5() {
-        return userMd5;
-    }
-
-    public void setUserMd5(String userMd5) {
-        this.userMd5 = userMd5;
-    }
-
-    public String getUniqueId() {
-        return uniqueId;
-    }
-
-    public void setUniqueId(String uniqueId) {
-        this.uniqueId = uniqueId;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getUserCk() {
-        return userCk;
-    }
-
-    public void setUserCk(String userCk) {
-        this.userCk = userCk;
-    }
-
-    public String getTaskType() {
-        return taskType;
-    }
-
-    public void setTaskType(String taskType) {
-        this.taskType = taskType;
-    }
-
-    public String getIp() {
-        return ip;
-    }
-
-    public void setIp(String ip) {
-        this.ip = ip;
-    }
-
-    public Integer getCount() {
-        return count;
-    }
-
-    public void setCount(Integer count) {
-        this.count = count;
-    }
-
-    public Integer getTodaycount() {
-        return todaycount;
-    }
-
-    public void setTodaycount(Integer todaycount) {
-        this.todaycount = todaycount;
-    }
-
-    public Integer getTodayEffectcount() {
-        return todayEffectcount;
-    }
-
-    public void setTodayEffectcount(Integer todayEffectcount) {
-        this.todayEffectcount = todayEffectcount;
-    }
-
-    public String getUserStatus() {
-        return userStatus;
-    }
-
-    public void setUserStatus(String userStatus) {
-        this.userStatus = userStatus;
-    }
-
-    public String getUserTodaystatus() {
-        return userTodaystatus;
-    }
-
-    public void setUserTodaystatus(String userTodaystatus) {
-        this.userTodaystatus = userTodaystatus;
-    }
-
-    public Date getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
-
-    public Date getUpdateTime() {
-        return updateTime;
-    }
-
-    public void setUpdateTime(Date updateTime) {
-        this.updateTime = updateTime;
-    }
 
 }
