@@ -16,8 +16,8 @@ EXPOSE 8080 8081
 
 CMD OPTS_NODE_MARK=`ifconfig eth0 | grep 'inet addr' | awk '{print $2}' | awk -F: '{print $2}'` && \
     java -Dspring.profiles.active=${OPTS_PROFILES_ACTIVE} \
-         -Decarx.profile.env=${OPTS_ENV_MARK} \
-         -Decarx.profile.node=${OPTS_NODE_MARK} \
+         -Dhelp.profile.env=${OPTS_ENV_MARK} \
+         -Dhelp.profile.node=${OPTS_NODE_MARK} \
          ${OPTS_JVM_OPTS} \
          ${OPTS_OTHER} \
          -Djava.security.egd=file:/dev/./urandom \

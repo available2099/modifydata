@@ -3,6 +3,7 @@ package com.demo.ai.controller;
 import com.demo.ai.entity.*;
 import com.demo.ai.producer.RabbitSender;
 import com.demo.ai.service.*;
+import com.demo.ai.service.impl.JdHelpServiceImpl;
 import com.demo.ai.util.RedisConfigTest;
 import com.demo.ai.util.SnowflakeIdWorker;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -75,29 +76,29 @@ public class JdHelperController {
         String[] md5arry = new String[]{"760517d4be0b4082a5c6cf5529e4599e", "fnfkmp5hx2byrqss7h5jr5j2wtnlfimruj4z7ii"};
         String md5 = "";
         if (!ArrayUtils.contains(md5arry, subscriptionurl)) {
-          //  redisTemplate.setEnableTransactionSupport(true);//开启事务的支持
-          //  redisTemplate.watch("num" + type);//watch某个key,当该key被其它客户端改变时,则会中断当前的操作
+            //  redisTemplate.setEnableTransactionSupport(true);//开启事务的支持
+            //  redisTemplate.watch("num" + type);//watch某个key,当该key被其它客户端改变时,则会中断当前的操作
 
             String numTemp = obj.writeValueAsString(redisTemplate.opsForValue().get("num" + type));
-            System.out.println("----" + type + "----剩余库存："+numTemp);
+            System.out.println("----" + type + "----剩余库存：" + numTemp);
 
             long num = Long.valueOf(numTemp);//获取当前商品的数量
             if (num <= 0) {//检查当前商品的数量
                 System.out.println("----" + type + "----秒杀已结束");
             } else {
-                long stock =  redisTemplate.opsForValue().decrement("num" + type,1);
+                long stock = redisTemplate.opsForValue().decrement("num" + type, 1);
 
-                if(stock<0){
+                if (stock < 0) {
                     num = Long.valueOf(obj.writeValueAsString(redisTemplate.opsForValue().get("num" + type)));//获取当前商品的数量
-                    if(num!=0 && num < 1){
+                    if (num != 0 && num < 1) {
                         //返回redis库存
-                        redisTemplate.opsForValue().increment("num" + type,1);
-                    }else if(num == 0){
-                        redisTemplate.opsForValue().set("num" + type,0);
+                        redisTemplate.opsForValue().increment("num" + type, 1);
+                    } else if (num == 0) {
+                        redisTemplate.opsForValue().set("num" + type, 0);
                     }
                     System.out.println("----" + type + "----秒杀失败");
 
-                }else {
+                } else {
 
                     System.out.println("----" + type + "----秒杀成功");
                     switch (type) {
@@ -113,9 +114,9 @@ public class JdHelperController {
                     }
                 }
 
-            //    redisTemplate.multi();//事务
-           //     redisTemplate.boundValueOps("num" + type).decrement(1);//下单成功 商品数量减1
-               // List<Object> exec = redisTemplate.exec();//执行事务
+                //    redisTemplate.multi();//事务
+                //     redisTemplate.boundValueOps("num" + type).decrement(1);//下单成功 商品数量减1
+                // List<Object> exec = redisTemplate.exec();//执行事务
     /*            if (exec == null || exec.size() == 0) {
                     System.out.println("----" + type + "----秒杀失败");
                 } else {
@@ -138,6 +139,72 @@ public class JdHelperController {
         return md5;
     }
 
+    ///api/v2/jd/5g/read/${randomCount}/create
+    @RequestMapping(value = "/api/{v2}/jd/{type}/{opration}/{count}", method = {RequestMethod.GET})
+    public ReturnDAO queryDataAPI(@PathVariable String v2,@PathVariable String type, @PathVariable String opration, @PathVariable String count, HttpServletRequest request) throws Exception {
+        redisTemplate.boundValueOps("totalnew").increment(1);//计算请求量
+        ObjectMapper obj = new ObjectMapper();
+        String userAgent = request.getHeader("user-agent");
+        System.out.println("客户端请求类型：" + userAgent);
+        //计算时间差
+        //判断长度 timeOrder.isBefore(timerequest) &&
+        String ip = getIpAddress(request);
+        System.out.println("ip是多少：" + ip);
+        //查询一下redis是否有数据，有的话返回空
+        String md5 = "";
+        // if("create".equals(opration)){
+        //新版本搞事情
+        JdHelpService jdHelp = new JdHelpServiceImpl();
+        userScheduler.execute(() -> {
+                    //存数据到数据库
+                    JdHelp jdFruit = new JdHelp();
+                    jdFruit.setUserMd5(count);
+                    jdFruit.setIp(ip);
+                    jdFruit.setUserStatus("1");
+                    jdFruit.setTaskType(type);
+                    jdFruit.setUniqueId(SnowflakeIdWorker.generateId().toString());
+                    jdFruit.setUserTodaystatus("1");
+                    jdFruit.setTodaycount(1);
+                    jdFruit.setUpdateTime(new Date());
+                    jdFruit.setCreateTime(new Date());
+                    jdHelp.insert(jdFruit);
+                    //存数据到redis
+                }
+        );
+        // }else if("read".equals(opration)){
+
+        //redis查询数据
+
+        Set<Serializable> fruitSetSerializable = redisTemplate.boundSetOps(type + ":" + count).members();
+        String json = obj.writeValueAsString(fruitSetSerializable);
+        JavaType javaType = getCollectionType(obj, Set.class, JdHelp.class);
+
+        Set<JdHelp> fruitSet = obj.readValue(json, javaType);
+             /*   if (!json.contains("760517d4be0b4082a5c6cf5529e4599e")) {
+                    md5 = secondkill(type, subscriptionurl);
+                }*/
+        String newMd5 = "";
+        List<String> md5List = new ArrayList<>();
+        for (JdHelp fr : fruitSet) {
+            md5List.add(fr.getUserMd5());
+            if ("".equals(newMd5)) {
+                newMd5 = fr.getUserMd5();
+
+            } else {
+                newMd5 = newMd5 + "@" + fr.getUserMd5();
+
+            }
+        }
+        ReturnDAO returnDAO = new ReturnDAO();
+        returnDAO.setCode(200);
+        returnDAO.setMessage("success");
+        returnDAO.setData(md5List.toArray(new String[0]));
+        return returnDAO;
+        // }
+
+//return "";
+
+    }
 
     @RequestMapping(value = "/{type}/{subscriptionurl}", method = {RequestMethod.GET})
     public String queryData(@PathVariable String type, @PathVariable String subscriptionurl, HttpServletRequest request, @RequestParam("ti") String time) throws Exception {
@@ -165,7 +232,7 @@ public class JdHelperController {
 
 //        if (userAgent.contains("Quantumult") && subscriptionurl.length() > 20) {
         //判断长度 timeOrder.isBefore(timerequest) &&
-        if ( subscriptionurl.length() > 20) {
+        if (subscriptionurl.length() > 20) {
             String ip = getIpAddress(request);
             System.out.println("ip是多少：" + ip);
             //查询一下redis是否有数据，有的话返回空
@@ -288,25 +355,25 @@ public class JdHelperController {
 
                 //新版本搞事情
                 userScheduler.execute(() -> {
-                           //存数据到数据库
-                    JdHelp jdFruit = new JdHelp();
-                    jdFruit.setUserMd5(subscriptionurl);
-                    jdFruit.setIp(ip);
-                    jdFruit.setUserStatus("1");
-                    jdFruit.setTaskType(type);
-                    jdFruit.setUniqueId(SnowflakeIdWorker.generateId().toString());
-                    jdFruit.setUserTodaystatus("1");
-                    jdFruit.setTodaycount(1);
-                    jdFruit.setUpdateTime(new Date());
-                    jdFruit.setCreateTime(new Date());
-                    jdHelp.insert(jdFruit);
-                        //存数据到redis
+                            //存数据到数据库
+                            JdHelp jdFruit = new JdHelp();
+                            jdFruit.setUserMd5(subscriptionurl);
+                            jdFruit.setIp(ip);
+                            jdFruit.setUserStatus("1");
+                            jdFruit.setTaskType(type);
+                            jdFruit.setUniqueId(SnowflakeIdWorker.generateId().toString());
+                            jdFruit.setUserTodaystatus("1");
+                            jdFruit.setTodaycount(1);
+                            jdFruit.setUpdateTime(new Date());
+                            jdFruit.setCreateTime(new Date());
+                            jdHelp.insert(jdFruit);
+                            //存数据到redis
                         }
                 );
 
                 //redis查询数据
 
-                Set<Serializable> fruitSetSerializable = redisTemplate.boundSetOps(type+":" + subscriptionurl).members();
+                Set<Serializable> fruitSetSerializable = redisTemplate.boundSetOps(type + ":" + subscriptionurl).members();
                 String json = obj.writeValueAsString(fruitSetSerializable);
                 JavaType javaType = getCollectionType(obj, Set.class, JdHelp.class);
 
@@ -322,7 +389,7 @@ public class JdHelperController {
                         newMd5 = newMd5 + "@" + fr.getUserMd5();
                     }
                 }
-                if(StringUtils.isNotBlank(newMd5))
+                if (StringUtils.isNotBlank(newMd5))
                     return newMd5;
                 return md5;
             }
@@ -368,19 +435,19 @@ public class JdHelperController {
             ObjectMapper obj = new ObjectMapper();
 
 
-                Set<Serializable> fruitSetSerializable = redisTemplate.boundSetOps("mobile:" + subscriptionurl).members();
-                String json = obj.writeValueAsString(fruitSetSerializable);
-                JavaType javaType = getCollectionType(obj, Set.class, JdFruit.class);
+            Set<Serializable> fruitSetSerializable = redisTemplate.boundSetOps("mobile:" + subscriptionurl).members();
+            String json = obj.writeValueAsString(fruitSetSerializable);
+            JavaType javaType = getCollectionType(obj, Set.class, JdFruit.class);
 
-                Set<JdFruit> fruitSet = obj.readValue(json, javaType);
+            Set<JdFruit> fruitSet = obj.readValue(json, javaType);
 
-                for (JdFruit fr : fruitSet) {
-                    if ("".equals(md5)) {
-                        md5 = fr.getUserMd5();
-                    } else {
-                        md5 = md5 + "@" + fr.getUserMd5();
-                    }
+            for (JdFruit fr : fruitSet) {
+                if ("".equals(md5)) {
+                    md5 = fr.getUserMd5();
+                } else {
+                    md5 = md5 + "@" + fr.getUserMd5();
                 }
+            }
 
         /*    int[] items = new int[]{1, 2};
 
@@ -406,7 +473,7 @@ public class JdHelperController {
                 if (!"".equals(selfcode)) {
                     md5 = selfcode + "@" + md5;
                 }*/
-           // }
+            // }
 
         }
         return md5;

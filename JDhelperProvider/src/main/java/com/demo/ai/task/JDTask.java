@@ -67,7 +67,7 @@ public class JDTask {
         return obj.getTypeFactory().constructParametricType(collectionClass, elementClasses);
     }
     // @Scheduled(cron = "* 22 23 * * ?")
-    @Scheduled(cron = "0 25 8 1,10,20 * ?")
+    //@Scheduled(cron = "0 25 8 1,10,20 * ?")
     public void updataUserTodaystatus() throws InterruptedException {
         System.out.println("进入发送助理码模块");
         Map<String,String> urlMap = new HashMap<>();

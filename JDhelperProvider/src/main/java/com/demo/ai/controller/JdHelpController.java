@@ -2,8 +2,8 @@ package com.demo.ai.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.demo.ai.entity.TextClassify;
+import com.demo.ai.service.InsertDateService;
 import com.demo.ai.service.JdHelpService;
-import com.demo.ai.util.HttpSyncExecutor;
 import com.demo.ai.util.OkHttpUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.utils.URIBuilder;
@@ -35,8 +35,14 @@ public class JdHelpController {
      */
     @Resource
     private JdHelpService jdHelpService;
-    @Autowired
-    private HttpSyncExecutor httpSyncExecutor;
+    /*@Autowired
+    private HttpSyncExecutor httpSyncExecutor;*/
+    @Resource
+    InsertDateService insertDateService;
+    @GetMapping("in")
+    public void insertTest(){
+        insertDateService.insertFruit();
+    }
     /**
      * 通过主键查询单条数据
      *
