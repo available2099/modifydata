@@ -474,8 +474,9 @@ public class JdHelperController {
                         newMd5 = newMd5 + "@" + fr.getUserMd5();
                     }
                 }
-                if (StringUtils.isNotBlank(newMd5))
+                if (StringUtils.isNotBlank(newMd5)){
                     return newMd5;
+                }
                 return md5;
             }
         }
