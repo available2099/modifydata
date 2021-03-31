@@ -1,11 +1,14 @@
 package com.demo.ai.task;
 
-import com.demo.ai.entity.*;
+import com.demo.ai.dto.JdHelpDto;
+import com.demo.ai.entity.JdHelp;
+import com.demo.ai.entity.JdHelpUrl;
 import com.demo.ai.service.*;
 import com.demo.ai.util.RestTemplateUtils;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpEntity;
@@ -158,7 +161,7 @@ public class JDTask {
     //  @Scheduled(cron = "* 27 19 * * ?")
     //  @Scheduled(cron = "* 10 16 * * ?")
     //  @Scheduled(cron = "* 26 23 * * ?")
-    @Scheduled(cron = "0 15,44 8,9,10,11,13,15,18,20,21,22,23,5 * * ?")
+    @Scheduled(cron = "0 13,44 8,9,10,11,13,14,15,18,20,21,22,23,5 * * ?")
     public void taskQueryMysql() {
         System.out.println("进入生成助理码");
        // deleteByPrex("mobile:");
@@ -176,7 +179,7 @@ public class JDTask {
         JdHelpUrl jdHelpUrl = new JdHelpUrl();
         jdHelpUrl.setStatus("1");
         List<JdHelpUrl>   jdHelpUrlList =   jdHelpUrlService.queryAll(jdHelpUrl);
-
+        JdHelpDto jdHelpDto = null;
         for(JdHelpUrl jdurl :jdHelpUrlList){
             List<JdHelp>  newJdHelp  =   helpList.stream().filter(a->a.getTaskType().equals(jdurl.getTaskType())).collect(Collectors.toList());
             int i = 0;
@@ -190,7 +193,9 @@ public class JDTask {
                     for (JdHelp kjfset : jdFruitSet) {
                         for (JdHelp jfset : jdFruitSet) {
                             if (!kjfset.getUserMd5().equals(jfset.getUserMd5())) {
-                                redisTemplate.opsForSet().add(jdurl.getTaskType()+":" + kjfset.getUserMd5(), jfset);
+                                jdHelpDto = new JdHelpDto();
+                                BeanUtils.copyProperties(jfset, jdHelpDto);
+                                redisTemplate.opsForSet().add(jdurl.getTaskType()+":" + kjfset.getUserMd5(), jdHelpDto);
                             }
                         }
                     }
@@ -203,7 +208,9 @@ public class JDTask {
             for (JdHelp kjfset : jdFruitSet) {
                 for (JdHelp jfset : jdFruitSet) {
                     if (!kjfset.getUserMd5().equals(jfset.getUserMd5())) {
-                        redisTemplate.opsForSet().add(jdurl.getTaskType()+":" + kjfset.getUserMd5(), jfset);
+                        jdHelpDto = new JdHelpDto();
+                        BeanUtils.copyProperties(jfset, jdHelpDto);
+                        redisTemplate.opsForSet().add(jdurl.getTaskType()+":" + kjfset.getUserMd5(), jdHelpDto);
                     }
                 }
             }

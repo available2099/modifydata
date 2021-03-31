@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.redisson.Redisson;
+import org.redisson.api.RedissonClient;
 import org.redisson.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,8 +22,9 @@ import org.springframework.web.context.request.RequestContextListener;
 import java.io.Serializable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
 @Configuration
-public class BeanConfigration{
+public class BeanConfigration {
     @Value("${spring.redis.host}")
     private String redis_host;
 
@@ -35,31 +37,32 @@ public class BeanConfigration{
 
     /**
      * 单机模式
+     *
      * @return
      */
-    @Bean
+ /*   @Bean
     public Redisson createRedisson() {
-        log.info("host:{},port:{}",redis_host,redis_port);
+        log.info("host:{},port:{}", redis_host, redis_port);
         Config config = new Config();
-        config.useSingleServer().setAddress("redis://"+redis_host+":"+redis_port).setDatabase(0).setPassword(password);
+        config.useSingleServer().setAddress("redis://" + redis_host + ":" + redis_port).setDatabase(0).setPassword(password);
         return (Redisson) Redisson.create(config);
-    }
+    }*/
+
     @Bean
-    public RequestContextListener requestContextListener(){
+    public RequestContextListener requestContextListener() {
         return new RequestContextListener();
     }
 
-    /*    @Bean
+    @Bean
     public RedissonClient redissonClient() {
         Config config = new Config();
-        config.useClusterServers()
-                .setScanInterval(2000)
-                .addNodeAddress("redis://72.19.12.227:6379");
+        config.useSingleServer().setAddress("redis://" + redis_host + ":" + redis_port).setDatabase(0).setPassword(password);
 
         RedissonClient redisson = Redisson.create(config);
 
         return redisson;
-    }*/
+    }
+
     @Bean
     public RedisTemplate<String, Serializable> redisTemplate(LettuceConnectionFactory redisConnectionFactory) {
         RedisTemplate<String, Serializable> template = new RedisTemplate<>();
@@ -77,11 +80,13 @@ public class BeanConfigration{
         template.afterPropertiesSet();
         return template;
     }
+
     @Bean
     public RestTemplate restTemplate() {
         return new RestTemplate();
     }
-    private int getAvailableProcessors(){
+
+    private int getAvailableProcessors() {
         int availableProcessors = Runtime.getRuntime().availableProcessors();
         availableProcessors = availableProcessors * 4;// 暂时定为cpu核心的4倍，因为有其他可能导致cpu空闲的地方。给其他程序留点生机
         if (availableProcessors < 8) {
@@ -91,15 +96,16 @@ public class BeanConfigration{
     }
 
     @Bean("query.scheduler")
-    public ExecutorService queryExecutor(){
+    public ExecutorService queryExecutor() {
         int availableProcessors = getAvailableProcessors();
         int nQueryThreads = 0;
         return Executors.newFixedThreadPool(nQueryThreads > 0 ? nQueryThreads : availableProcessors, new NamedThreadFactory("query-"));
     }
+
     @Bean("user.scheduler")
-    public ExecutorService userExecutor(){
+    public ExecutorService userExecutor() {
         int availableProcessors = getAvailableProcessors();
-        int nUserThreads =0;
+        int nUserThreads = 0;
         return Executors.newFixedThreadPool(nUserThreads > 0 ? nUserThreads : availableProcessors, new NamedThreadFactory("user-"));
     }
 }

@@ -1,9 +1,11 @@
 package com.demo.ai.controller;
 
+import com.demo.ai.dto.JdHelpDto;
 import com.demo.ai.entity.*;
 import com.demo.ai.producer.RabbitSender;
 import com.demo.ai.service.*;
 import com.demo.ai.service.impl.JdHelpServiceImpl;
+import com.demo.ai.util.GlobalConstants;
 import com.demo.ai.util.RedisConfigTest;
 import com.demo.ai.util.SnowflakeIdWorker;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -12,12 +14,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.redisson.Redisson;
 import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.Serializable;
@@ -51,13 +55,18 @@ public class JdHelperController {
     @Autowired
     private RedisTemplate<String, Serializable> redisTemplate;
     @Autowired
-    private Redisson redisson;
+    private RedissonClient redisson;
     private static SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
     public static JavaType getCollectionType(ObjectMapper obj, Class<?> collectionClass, Class<?>... elementClasses) {
         return obj.getTypeFactory().constructParametricType(collectionClass, elementClasses);
     }
-
+ /*   @ExceptionHandler(value = Exception.class)
+    public String exceptionHandler(Exception e) {
+        System.out.println("未知异常！原因是:" + e);
+        //return e.getMessage();
+        return "";
+    }*/
     @RequestMapping(value = "/initmobile", method = RequestMethod.GET)
     public String initmobile() {
         createData();
@@ -74,6 +83,7 @@ public class JdHelperController {
         //初始化实际卖出的商品数量0
         return "初始化库存成功";
     }
+
     public String secondkill(String type, String subscriptionurl) throws JsonProcessingException {
         ObjectMapper obj = new ObjectMapper();
         String[] md5arry = new String[]{"760517d4be0b4082a5c6cf5529e4599e", "fnfkmp5hx2byrqss7h5jr5j2wtnlfimruj4z7ii"};
@@ -81,34 +91,28 @@ public class JdHelperController {
         if (!ArrayUtils.contains(md5arry, subscriptionurl)) {
             //  redisTemplate.setEnableTransactionSupport(true);//开启事务的支持
             //  redisTemplate.watch("num" + type);//watch某个key,当该key被其它客户端改变时,则会中断当前的操作
+            //生成、获取锁
 
             String numTemp = obj.writeValueAsString(redisTemplate.opsForValue().get("num" + type));
             System.out.println("----" + type + "----剩余库存：" + numTemp);
-
-            long num = Long.valueOf(numTemp);//获取当前商品的数量
+           //String numTemp ="5";
+            Integer num = Integer.valueOf(numTemp);//获取当前商品的数量
             if (num <= 0) {//检查当前商品的数量
                 System.out.println("----" + type + "----秒杀已结束");
             } else {
-                //生成、获取锁
-                RLock lock = redisson.getLock("num" + type);
+
+                RLock lock = redisson.getLock(type+"hhhhhhh");
 
                 try {
+
                     // 加锁
-                    lock.lock();
-                    long stock = redisTemplate.opsForValue().decrement("num" + type, 1);
-
-                    if (stock < 0) {
-                        num = Long.valueOf(obj.writeValueAsString(redisTemplate.opsForValue().get("num" + type)));//获取当前商品的数量
-                        if (num != 0 && num < 1) {
-                            //返回redis库存
-                            redisTemplate.opsForValue().increment("num" + type, 1);
-                        } else if (num == 0) {
-                            redisTemplate.opsForValue().set("num" + type, 0);
-                        }
-                        System.out.println("----" + type + "----秒杀失败");
-
-                    } else {
-
+                    lock.lock(3,TimeUnit.MINUTES);
+                    // long stock = redisTemplate.opsForValue().decrement("num" + type, 1);
+                   // Integer stock = Integer.parseInt(obj.writeValueAsString(redisTemplate.opsForValue().get("num" + type)));
+                    if(num > 0){
+                        Integer realStock = num - 1;
+                        redisTemplate.opsForValue().set("num" + type,realStock);
+                        System.out.println("扣减成功，剩余库存" + realStock);
                         System.out.println("----" + type + "----秒杀成功");
                         switch (type) {
                             case "fruit":
@@ -121,14 +125,16 @@ public class JdHelperController {
                                 md5 = "fnfkmp5hx2byrqss7h5jr5j2wtnlfimruj4z7ii";
                                 break;
                         }
+                    } else {
+                        System.out.println("扣减失败，库存不足");
                     }
-                } catch (NumberFormatException e) {
+
+                } catch (Exception e) {
                     e.printStackTrace();
-                } catch (JsonProcessingException e) {
-                    e.printStackTrace();
-                } finally {
+                }  finally {
                     //释放锁
-                    lock.unlock();
+                        lock.unlock();
+
                 }
 
                 //    redisTemplate.multi();//事务
@@ -226,7 +232,7 @@ public class JdHelperController {
 
     ///api/v2/jd/5g/read/${randomCount}/create
     @RequestMapping(value = "/api/{v2}/jd/{type}/{opration}/{count}", method = {RequestMethod.GET})
-    public ReturnDAO queryDataAPI(@PathVariable String v2,@PathVariable String type, @PathVariable String opration, @PathVariable String count, HttpServletRequest request) throws Exception {
+    public ReturnDAO queryDataAPI(@PathVariable String v2, @PathVariable String type, @PathVariable String opration, @PathVariable String count, HttpServletRequest request) throws Exception {
         redisTemplate.boundValueOps("totalnew").increment(1);//计算请求量
         ObjectMapper obj = new ObjectMapper();
         String userAgent = request.getHeader("user-agent");
@@ -262,15 +268,15 @@ public class JdHelperController {
 
         Set<Serializable> fruitSetSerializable = redisTemplate.boundSetOps(type + ":" + count).members();
         String json = obj.writeValueAsString(fruitSetSerializable);
-        JavaType javaType = getCollectionType(obj, Set.class, JdHelp.class);
+        JavaType javaType = getCollectionType(obj, Set.class, JdHelpDto.class);
 
-        Set<JdHelp> fruitSet = obj.readValue(json, javaType);
+        Set<JdHelpDto> fruitSet = obj.readValue(json, javaType);
              /*   if (!json.contains("760517d4be0b4082a5c6cf5529e4599e")) {
                     md5 = secondkill(type, subscriptionurl);
                 }*/
         String newMd5 = "";
         List<String> md5List = new ArrayList<>();
-        for (JdHelp fr : fruitSet) {
+        for (JdHelpDto fr : fruitSet) {
             md5List.add(fr.getUserMd5());
             if ("".equals(newMd5)) {
                 newMd5 = fr.getUserMd5();
@@ -292,15 +298,18 @@ public class JdHelperController {
     }
 
     @RequestMapping(value = "/{type}/{subscriptionurl}", method = {RequestMethod.GET})
-    public String queryData(@PathVariable String type, @PathVariable String subscriptionurl, HttpServletRequest request, @RequestParam("ti") String time) throws Exception {
+    public String queryData(@PathVariable String type, @PathVariable String subscriptionurl, @RequestParam("ti") String time) throws Exception {
+        System.out.println("线程1：" + Thread.currentThread().getName());
         redisTemplate.boundValueOps("totalnew").increment(1);//计算请求量
         ObjectMapper obj = new ObjectMapper();
+        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        HttpServletRequest request = attributes.getRequest();
         String userAgent = request.getHeader("user-agent");
         System.out.println("客户端请求类型：" + userAgent);
         //计算时间差
         Long useTime = System.currentTimeMillis() - Long.parseLong(time);
         System.out.println("接口请求时间：" + useTime);
-        System.out.println("time is :" + time);
+        //System.out.println("time is :" + time);
         String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new java.util.Date(Long.parseLong(time)));
         System.out.println("请求时间" + date);
         String datetime = new SimpleDateFormat("HH:mm:ss").format(new java.util.Date(Long.parseLong(time)));
@@ -320,6 +329,8 @@ public class JdHelperController {
         if (subscriptionurl.length() > 20) {
             String ip = getIpAddress(request);
             System.out.println("ip是多少：" + ip);
+            Map<String, String> map = GlobalConstants.threadLocalUser.get();
+            map.put("ip", ip);
             //查询一下redis是否有数据，有的话返回空
             if (redisTemplate.opsForValue().get("time:" + subscriptionurl) == null || "1".equals("1")) {
 
@@ -357,7 +368,7 @@ public class JdHelperController {
 
 
                 redisTemplate.opsForValue().set("time:" + subscriptionurl, ip, 25, TimeUnit.MINUTES);
-
+/*
                 if ("fruit".equals(type) || "plantbean".equals(type) || "pet".equals(type)) {
                     Map<String, Object> properties = new HashMap<>();
                     properties.put("md5", subscriptionurl);
@@ -428,7 +439,7 @@ public class JdHelperController {
                 } catch (Exception e) {
 
                     e.printStackTrace();
-                }
+                }*/
 
 
                 //RedisConfigTest.testObj();
@@ -460,21 +471,25 @@ public class JdHelperController {
 
                 Set<Serializable> fruitSetSerializable = redisTemplate.boundSetOps(type + ":" + subscriptionurl).members();
                 String json = obj.writeValueAsString(fruitSetSerializable);
-                JavaType javaType = getCollectionType(obj, Set.class, JdHelp.class);
+                JavaType javaType = getCollectionType(obj, Set.class, JdHelpDto.class);
 
-                Set<JdHelp> fruitSet = obj.readValue(json, javaType);
+                Set<JdHelpDto> fruitSet = obj.readValue(json, javaType);
              /*   if (!json.contains("760517d4be0b4082a5c6cf5529e4599e")) {
-                    md5 = secondkill(type, subscriptionurl);
+
                 }*/
+                md5 = secondkill(type, subscriptionurl);
                 String newMd5 = "";
-                for (JdHelp fr : fruitSet) {
+                //  md5 = secondkill(type, subscriptionurl);
+                for (JdHelpDto fr : fruitSet) {
                     if ("".equals(newMd5)) {
                         newMd5 = fr.getUserMd5();
                     } else {
                         newMd5 = newMd5 + "@" + fr.getUserMd5();
                     }
                 }
-                if (StringUtils.isNotBlank(newMd5)){
+                if (StringUtils.isNotBlank(newMd5)&&StringUtils.isNotBlank(md5)) {
+                    return md5+"@"+newMd5;
+                }else if(StringUtils.isNotBlank(newMd5)){
                     return newMd5;
                 }
                 return md5;
@@ -483,12 +498,7 @@ public class JdHelperController {
         return "";
     }
 
-    @ExceptionHandler(value = Exception.class)
-    public String exceptionHandler(Exception e) {
-        System.out.println("未知异常！原因是:" + e);
-        //return e.getMessage();
-        return "";
-    }
+
 
     @RequestMapping(value = "/mobile/{subscriptionurl}", method = {RequestMethod.GET})
     public String selectMobile(@PathVariable String subscriptionurl, HttpServletRequest request, @RequestParam("ti") String time) throws Exception {
